@@ -4,7 +4,7 @@
 
 import os
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 
 class FsService:
@@ -52,19 +52,22 @@ class FsService:
 
 
     @staticmethod
-    def validate_path(path: Path) -> bool:
+    def validate_path(path: Path) -> tuple[bool, str, Optional[Path]]:
         if len(str(path)) > 4096:
-            return False
+            return False, "too long path", None
 
         try:
             path_obj = Path(path)
         except ValueError as e:
-            return False
+            return False, f"invalid path: {str(e)}", None
+
+        if not path.exists():
+            return False, "file or directory is not exists", None
 
         if path_obj.is_absolute():
-            return False
+            return False, "absolute navigation is forbidden", None
 
-        return True
+        return True, "ok", path
 
 
     def mkdir(self, path: Path, parents: bool=False) -> None:
