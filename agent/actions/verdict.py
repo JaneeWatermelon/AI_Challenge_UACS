@@ -14,6 +14,7 @@ class ExitCode(Enum):
 
 
 class ActionVerdict:
+
     def __init__(self, code: ExitCode, details: str = ""):
         self.code = code
         self.details = details
