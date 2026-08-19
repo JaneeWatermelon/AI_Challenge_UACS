@@ -19,3 +19,9 @@ env/
 # Logs
 *.log
 !local_task/incident-log-forensics/environment/*.log
+
+.env
+venv/
+venv_*/
+
+jobs/

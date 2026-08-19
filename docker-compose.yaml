@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  agent:
+    image: secureintelligent/acp:latest
+    container_name: uacs-agent
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      LOCAL_AGENT_MODEL: ${LOCAL_AGENT_MODEL:?set LOCAL_AGENT_MODEL}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:?set OPENAI_BASE_URL}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?set OPENAI_API_KEY}
+      LOCAL_AGENT_WORKDIR: ${LOCAL_AGENT_WORKDIR:-/workspace}
+    volumes:
+      - ./:/workspace
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: ["bash", "-lc", "sleep infinity"]
