@@ -15,12 +15,14 @@ class Action(ABC):
                  description: str,
                  arguments: Dict[str, Any]):
         self.name = name
-        self.desc = description
-        self.args = arguments
+        self.description = description
+        self.arguments = arguments
+
 
     @abstractmethod
     def to_json(self) -> Dict[str, Any]:
         pass
+
 
     @abstractmethod
     def execute(self) -> ActionVerdict:
