@@ -3,6 +3,7 @@
 """
 
 from enum import Enum
+from typing import Dict, Any
 
 
 class ExitCode(Enum):
@@ -10,15 +11,17 @@ class ExitCode(Enum):
     NO_ACTION_SELECTED = "no_action_selected"
     LOGIC_ERROR = "logic_error"
     PERMISSION_DENIED = "permission_denied"
+    MISSED_ARGUMENT = "missed_argument"
     INVALID_ARGUMENT = "invalid_argument"
     EXECUTION_ERROR = "execution_error"
 
 
 class ActionVerdict:
 
-    def __init__(self, code: ExitCode, details: str = ""):
+    def __init__(self, code: ExitCode, details: str = "", result: Dict[str, Any] = {}):
         self.code = code
         self.details = details
+        self.result = result
 
 
     @property
@@ -26,18 +29,20 @@ class ActionVerdict:
         return self.code is ExitCode.SUCCESS
 
 
-    def to_json(self) -> dict:
+    def to_json(self) -> Dict[str, Any]:
         return {
             "code": self.code.value,
             "details": self.details,
+            "result": self.result,
         }
 
 
     @classmethod
-    def from_json(cls, data: dict) -> "ActionVerdict":
+    def from_json(cls, data: Dict[str, Any]) -> "ActionVerdict":
         return cls(
             code=ExitCode(data["code"]),
             details=data.get("details", ""),
+            result=data.get("result", {}),
         )
 
 
