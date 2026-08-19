@@ -2,22 +2,25 @@
 @file agent/actions/workspace/exists.py
 """
 
-import os.path
-import pathlib
-from typing import Dict, Any, Optional, override
+from typing import Dict, Any, override
 
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
+from ...utils.paths import FsService
 
 
 class ActionExists(Action):
 
-    def __init__(self, arguments: Dict[str, Any]):
+    def __init__(self,
+                 arguments: Dict[str, Any],
+                 fs_service: FsService):
         super().__init__(
             "exists",
             "checks the existing of a file or directory with arguments:\n"
-            "path - relative path to the file or directory"
-            , arguments)
+            "path - relative path to the file or directory",
+            arguments
+        )
+        self.fs = fs_service
 
 
     @override
@@ -39,42 +42,21 @@ class ActionExists(Action):
                 f"see the description:\n{self.description}"
             )
 
-        is_valid, reason, path_obj = self._validate(path)
+        is_valid, reason, path_obj = self.fs.validate_path(path)
         if not is_valid:
             return ActionVerdict(
                 ExitCode.INVALID_ARGUMENT,
                 reason
             )
 
-        exists = os.path.exists(path_obj)
+        if not self.fs.is_path_allowed(path):
+            return ActionVerdict(
+                ExitCode.INVALID_ARGUMENT,
+                f"given path is not allowed: {str(path)}"
+            )
 
         return ActionVerdict(
             ExitCode.SUCCESS,
             "",
-            {"exists": exists}
+            {"exists": path_obj.exists()}
         )
-
-
-    @staticmethod
-    def _validate(path: str) -> tuple[bool, str, Optional[pathlib.Path]]:
-        if len(path) > 4096:
-            return False, "too long path", None
-
-        try:
-            path_obj = pathlib.Path(path)
-        except ValueError as e:
-            return False, f"invalid path: {str(e)}", None
-
-        if path_obj.is_absolute():
-            return False, "absolute navigation is forbidden", None
-
-        if not ActionExists._is_path_allowed(path_obj):
-            return False, "this path is not allowed in the environment", None
-
-        return True, "ok", path_obj
-
-
-    @staticmethod
-    def _is_path_allowed(path_obj: pathlib.Path) -> bool:
-        #TODO: environment checking
-        ...
