@@ -4,7 +4,7 @@
 
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Any
 
 
 class FsService:
@@ -110,6 +110,23 @@ class FsService:
         full_path = self.resolve_path(path)
 
         full_path.rename(target)
+
+
+    def get_metadata(self, path: Path) -> Dict[str, Any]:
+        self._path_assert(path)
+
+        full_path = self.resolve_path(path)
+        stat = full_path.stat()
+
+        return {
+            "name": full_path.name,
+            "path": str(full_path),
+            "is_file": full_path.is_file(),
+            "is_dir": full_path.is_dir(),
+            "size": stat.st_size,
+            "modified": stat.st_mtime,
+            "permissions": oct(stat.st_mode)[-3:],
+        }
 
 
     def readline(self, path: Path, idx: int) -> str:
