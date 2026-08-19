@@ -25,10 +25,13 @@ class FsService:
         ...
 
 
-    def _path_assert(self, path: Path) -> None:
+    def _path_assert(self, path: Path) -> Path:
         full_path = self.resolve_path(path)
+
         if not self.is_path_allowed(full_path):
-            raise ValueError(f"path is not allowed in the environment: {str(path)}")
+            raise PermissionError(f"path is not allowed in the environment: {str(path)}")
+
+        return full_path
 
 
     def _dir_assert(self, path: Path) -> None:
