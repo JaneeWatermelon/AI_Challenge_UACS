@@ -16,8 +16,8 @@ class ActionExists(Action):
         super().__init__(
             "exists",
             "checks the existing of a file or directory with arguments:\n"
-            "path - relative path to the file or directory"
-            , arguments)
+            "path - relative path to the file or directory",
+            arguments)
 
 
     @override
