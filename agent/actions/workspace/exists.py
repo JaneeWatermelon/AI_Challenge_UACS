@@ -4,7 +4,7 @@
 
 import os.path
 import pathlib
-from typing import Dict, Any, override
+from typing import Dict, Any, Optional, override
 
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
@@ -39,10 +39,42 @@ class ActionExists(Action):
                 f"see the description:\n{self.description}"
             )
 
-        exists = os.path.exists(pathlib.Path(path))
+        is_valid, reason, path_obj = self._validate(path)
+        if not is_valid:
+            return ActionVerdict(
+                ExitCode.INVALID_ARGUMENT,
+                reason
+            )
+
+        exists = os.path.exists(path_obj)
 
         return ActionVerdict(
             ExitCode.SUCCESS,
             "",
             {"exists": exists}
         )
+
+
+    @staticmethod
+    def _validate(path: str) -> tuple[bool, str, Optional[pathlib.Path]]:
+        if len(path) > 4096:
+            return False, "too long path", None
+
+        try:
+            path_obj = pathlib.Path(path)
+        except ValueError as e:
+            return False, f"invalid path: {str(e)}", None
+
+        if path_obj.is_absolute():
+            return False, "absolute navigation is forbidden", None
+
+        if not ActionExists._is_path_allowed(path_obj):
+            return False, "this path is not allowed in the environment", None
+
+        return True, "ok", path_obj
+
+
+    @staticmethod
+    def _is_path_allowed(path_obj: pathlib.Path) -> bool:
+        #TODO: environment checking
+        ...
