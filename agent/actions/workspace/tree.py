@@ -24,11 +24,7 @@ class ActionTree(Action):
             "path - path to directory to walk (default: workspace root)\n"
             f"max_depth - maximum recursion depth (default: {DEFAULT_DEPTH})\n"
             "returns:\n"
-            "name: file/dir name\n"
-            "path: relative path\n"
-            "type: 'file' or 'dir'\n"
-            "size: size in bytes (for files)\n"
-            "children: nested items (for dirs)",
+            "endpoints: list of endpoints",
             arguments
         )
         self.fs = fs_service
@@ -55,4 +51,27 @@ class ActionTree(Action):
         depth = self.arguments.get("max_depth", DEFAULT_DEPTH)
 
         try:
-            endpoints = self.fs.listdir()
+            endpoints = self.fs.listdir(Path(path), depth)
+            return ActionVerdict(
+                ExitCode.SUCCESS,
+                "walked",
+                {"endpoints": endpoints}
+            )
+
+        except PermissionError as e:
+            return ActionVerdict(
+                ExitCode.PERMISSION_DENIED,
+                str(e)
+            )
+
+        except ValueError as e:
+            return ActionVerdict(
+                ExitCode.INVALID_ARGUMENT,
+                str(e)
+            )
+
+        except Exception as e:
+            return ActionVerdict(
+                ExitCode.EXECUTION_ERROR,
+                str(e)
+            )
