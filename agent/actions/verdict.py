@@ -10,10 +10,14 @@ class ExitCode(Enum):
     SUCCESS = "success"
     NO_ACTION_SELECTED = "no_action_selected"
     LOGIC_ERROR = "logic_error"
+    NOT_FOUND = "not_found"
     PERMISSION_DENIED = "permission_denied"
     MISSED_ARGUMENT = "missed_argument"
     INVALID_ARGUMENT = "invalid_argument"
     EXECUTION_ERROR = "execution_error"
+
+    def __str__(self):
+        return self.value
 
 
 class ActionVerdict:
