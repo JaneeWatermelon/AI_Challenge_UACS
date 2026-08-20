@@ -25,3 +25,12 @@ class RegexService:
         flags = 0 if case_sensitive else re.IGNORECASE
 
         return re.compile(pattern, flags)
+
+
+    @staticmethod
+    def search(
+            pattern: Pattern[str],
+            text: str
+    ) -> bool | None:
+        return pattern.search(text)
+
