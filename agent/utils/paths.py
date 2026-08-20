@@ -135,19 +135,7 @@ class FsService:
         }
 
 
-    def readline(self, path: Path, idx: int) -> str:
-        ...
-
-
     def readlines(self, path: Path, base: int, offset: int) -> List[str]:
-        ...
-
-
-    def insertline(self, path: Path, base: int, content: str) -> None:
-        ...
-
-
-    def appendline(self, path: Path, content: str) -> None:
         ...
 
 
@@ -156,4 +144,8 @@ class FsService:
 
 
     def appendlines(self, path: Path, content: List[str]) -> None:
+        ...
+
+
+    def replacelines(self, path: Path, base: int, content: List[str]) -> None:
         ...
