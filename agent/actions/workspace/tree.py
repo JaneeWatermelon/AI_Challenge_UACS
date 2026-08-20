@@ -1,7 +1,9 @@
 """
 @file agent/actions/workspace/tree.py
 """
-from typing import Dict, Any
+
+from typing import Dict, Any, override
+from pathlib import Path
 
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
@@ -28,8 +30,22 @@ class ActionTree(Action):
         )
         self.fs = fs_service
 
-    def to_json(self) -> Dict[str, Any]:
-        pass
 
+    @property
+    def workspace_dir(self) -> Path:
+        return self.fs.workspace_dir
+
+
+    @override
+    def to_json(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "arguments": self.arguments,
+            "workspace_dir": self.workspace_dir,
+        }
+
+
+    @override
     def execute(self) -> ActionVerdict:
-        pass
+        ...
