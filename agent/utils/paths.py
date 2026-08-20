@@ -16,6 +16,11 @@ class FsService:
         ...
 
 
+    @property
+    def workspace_dir(self) -> Path:
+        ...
+
+
     def resolve_path(self, path: Path) -> Path:
         ...
 
