@@ -2,7 +2,7 @@
 @file agent/actions/workspace/file_info.py
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, override
 from pathlib import Path
 
 from ..base import Action
@@ -32,6 +32,7 @@ class ActionFileInfo(Action):
         self.fs = fs_service
 
 
+    @override
     def to_json(self) -> Dict[str, Any]:
         return {
             "name": self.name,
@@ -40,6 +41,7 @@ class ActionFileInfo(Action):
         }
 
 
+    @override
     def execute(self) -> ActionVerdict:
         path = self.arguments.get("path", "")
 
