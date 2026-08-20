@@ -2,7 +2,7 @@
 @file agent/actions/workspace/read.py
 """
 
-from typing import Dict, Any, List, override
+from typing import Dict, Any, override
 from pathlib import Path
 
 from ..base import Action
