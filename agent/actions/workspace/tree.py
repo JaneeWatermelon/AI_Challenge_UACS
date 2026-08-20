@@ -8,6 +8,7 @@ from pathlib import Path
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
 from ...utils.paths import FsService
+from ...utils.assertion import safe_verdict
 
 
 DEFAULT_DEPTH = 1
@@ -46,32 +47,14 @@ class ActionTree(Action):
 
 
     @override
+    @safe_verdict
     def execute(self) -> ActionVerdict:
         path = self.arguments.get("path", "")
         depth = self.arguments.get("max_depth", DEFAULT_DEPTH)
 
-        try:
-            endpoints = self.fs.listdir(Path(path), depth)
-            return ActionVerdict(
-                ExitCode.SUCCESS,
-                "walked",
-                {"endpoints": endpoints}
-            )
-
-        except PermissionError as e:
-            return ActionVerdict(
-                ExitCode.PERMISSION_DENIED,
-                str(e)
-            )
-
-        except ValueError as e:
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                str(e)
-            )
-
-        except Exception as e:
-            return ActionVerdict(
-                ExitCode.EXECUTION_ERROR,
-                str(e)
-            )
+        endpoints = self.fs.listdir(Path(path), depth)
+        return ActionVerdict(
+            ExitCode.SUCCESS,
+            "walked",
+            {"endpoints": endpoints}
+        )
