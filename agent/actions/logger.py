@@ -52,7 +52,7 @@ class ActionLogger:
         else:
             return None
         
-    def pops(self, n: int) -> List[Action]:
+    def pop_n(self, n: int) -> List[Action]:
         """
         Pops the specified amount of actions from logger's stack.
 
