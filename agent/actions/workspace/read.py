@@ -8,6 +8,7 @@ from pathlib import Path
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
 from ...utils.paths import FsService
+from ...utils.assertion import safe_verdict
 
 
 class ActionRead(Action):
@@ -50,6 +51,7 @@ class ActionRead(Action):
 
 
     @override
+    @safe_verdict
     def execute(self) -> ActionVerdict:
         path = self.arguments.get("filename", "")
 
@@ -59,35 +61,16 @@ class ActionRead(Action):
                 "missed 'filename' argument"
             )
 
-        try:
-            full_path = self.fs.resolve_path(Path(path))
+        full_path = self.fs.resolve_path(Path(path))
 
-            if self.single:
-                idx = self.arguments.get("line")
-                content = self._readline(full_path, idx)
+        if self.single:
+            idx = self.arguments.get("line")
+            content = self._readline(full_path, idx)
 
-            else:
-                base = self.arguments.get("base")
-                offset = self.arguments.get("offset")
-                content = self._readlines(full_path, base, offset)
-
-        except PermissionError as e:
-            return ActionVerdict(
-                ExitCode.PERMISSION_DENIED,
-                str(e)
-            )
-
-        except ValueError as e:
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                str(e)
-            )
-
-        except Exception as e:
-            return ActionVerdict(
-                ExitCode.EXECUTION_ERROR,
-                str(e)
-            )
+        else:
+            base = self.arguments.get("base")
+            offset = self.arguments.get("offset")
+            content = self._readlines(full_path, base, offset)
 
         return ActionVerdict(
             ExitCode.SUCCESS,

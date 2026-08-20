@@ -7,6 +7,7 @@ from typing import Dict, Any, override
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
 from ...utils.paths import FsService
+from ...utils.assertion import safe_verdict
 
 
 class ActionExists(Action):
@@ -33,6 +34,7 @@ class ActionExists(Action):
 
 
     @override
+    @safe_verdict
     def execute(self) -> ActionVerdict:
         path = self.arguments.get("path")
 
@@ -49,7 +51,7 @@ class ActionExists(Action):
                 reason
             )
 
-        if not self.fs.is_path_allowed(path):
+        if not self.fs.is_path_allowed(path_obj):
             return ActionVerdict(
                 ExitCode.INVALID_ARGUMENT,
                 f"given path is not allowed: {str(path)}"

@@ -9,6 +9,7 @@ from enum import Enum
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
 from ...utils.paths import FsService
+from ...utils.assertion import safe_verdict
 
 
 class ModifyOption(Enum):
@@ -108,6 +109,7 @@ class ActionModify(Action):
 
 
     @override
+    @safe_verdict
     def execute(self) -> ActionVerdict:
         filename = self.arguments.get("filename", "")
         mode = self.arguments.get("mode", "")
@@ -118,40 +120,21 @@ class ActionModify(Action):
                 "missed 'filename' or 'mode' argument"
             )
 
-        try:
-            full_path = self.fs.resolve_path(Path(filename))
+        full_path = self.fs.resolve_path(Path(filename))
 
-            mode = self.mode
-            base = self.arguments.get("base")
-            offset = self.arguments.get("offset")
-            content = self.arguments.get("content")
+        mode = self.mode
+        base = self.arguments.get("base")
+        offset = self.arguments.get("offset")
+        content = self.arguments.get("content")
 
-            if mode == ModifyOption.DELETE:
-                return self._delete(full_path, base, offset)
+        if mode == ModifyOption.DELETE:
+            return self._delete(full_path, base, offset)
 
-            elif mode == ModifyOption.APPEND:
-                return self._append(full_path, content)
+        elif mode == ModifyOption.APPEND:
+            return self._append(full_path, content)
 
-            elif mode == ModifyOption.REPLACE:
-                return self._replace(full_path, base, offset, content)
+        elif mode == ModifyOption.REPLACE:
+            return self._replace(full_path, base, offset, content)
 
-            else:
-                return self._insert(full_path, base, content)
-
-        except PermissionError as e:
-            return ActionVerdict(
-                ExitCode.PERMISSION_DENIED,
-                str(e)
-            )
-
-        except ValueError as e:
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                str(e)
-            )
-
-        except Exception as e:
-            return ActionVerdict(
-                ExitCode.EXECUTION_ERROR,
-                str(e)
-            )
+        else:
+            return self._insert(full_path, base, content)

@@ -8,6 +8,7 @@ from pathlib import Path
 from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
 from ...utils.paths import FsService
+from ...utils.assertion import safe_verdict
 
 
 class ActionFileInfo(Action):
@@ -42,6 +43,7 @@ class ActionFileInfo(Action):
 
 
     @override
+    @safe_verdict
     def execute(self) -> ActionVerdict:
         path = self.arguments.get("path", "")
 
@@ -51,14 +53,7 @@ class ActionFileInfo(Action):
                 "missed 'path' argument"
             )
 
-        try:
-            stat = self.fs.get_metadata(Path(path))
-
-        except Exception as e:
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                f"invalid argument: {str(e)}"
-            )
+        stat = self.fs.get_metadata(Path(path))
 
         return ActionVerdict(
             ExitCode.SUCCESS,
