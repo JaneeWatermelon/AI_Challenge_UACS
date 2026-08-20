@@ -147,5 +147,5 @@ class FsService:
         ...
 
 
-    def replacelines(self, path: Path, base: int, content: List[str]) -> None:
+    def replacelines(self, path: Path, base: int, offset: int, content: List[str]) -> None:
         ...
