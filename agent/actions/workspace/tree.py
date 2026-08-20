@@ -10,6 +10,9 @@ from ..verdict import ActionVerdict, ExitCode
 from ...utils.paths import FsService
 
 
+DEFAULT_DEPTH = 1
+
+
 class ActionTree(Action):
 
     def __init__(self,
@@ -19,7 +22,7 @@ class ActionTree(Action):
             "tree",
             "returns a directory tree structure, arguments:\n"
             "path - path to directory to walk (default: workspace root)\n"
-            "max_depth - maximum recursion depth (default: 3)\n"
+            f"max_depth - maximum recursion depth (default: {DEFAULT_DEPTH})\n"
             "returns:\n"
             "name: file/dir name\n"
             "path: relative path\n"
@@ -48,4 +51,8 @@ class ActionTree(Action):
 
     @override
     def execute(self) -> ActionVerdict:
-        ...
+        path = self.arguments.get("path", "")
+        depth = self.arguments.get("max_depth", DEFAULT_DEPTH)
+
+        try:
+            endpoints = self.fs.listdir()
