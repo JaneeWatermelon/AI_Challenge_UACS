@@ -61,6 +61,10 @@ class ActionModify(Action):
                  content: List[str]
             ) -> ActionVerdict:
         self.fs.replacelines(path, base, offset, content)
+        return ActionVerdict(
+            ExitCode.SUCCESS,
+            f"{ModifyOption.REPLACE}"
+        )
 
 
     def _delete(self,
@@ -75,7 +79,11 @@ class ActionModify(Action):
                 path: Path,
                 content: List[str]
             ) -> ActionVerdict:
-        ...
+        self.fs.appendlines(path, content)
+        return ActionVerdict(
+            ExitCode.SUCCESS,
+            f"{ModifyOption.APPEND}"
+        )
 
 
     def _insert(self,
@@ -83,7 +91,11 @@ class ActionModify(Action):
                 base: int,
                 content: List[str]
             ) -> ActionVerdict:
-        ...
+        self.fs.insertlines(path, base, content)
+        return ActionVerdict(
+            ExitCode.SUCCESS,
+            f"{ModifyOption.INSERT}"
+        )
 
 
     @override
