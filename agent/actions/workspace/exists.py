@@ -1,0 +1,62 @@
+"""
+@file agent/actions/workspace/exists.py
+"""
+
+from typing import Dict, Any, override
+
+from ..base import Action
+from ..verdict import ActionVerdict, ExitCode
+from ...utils.paths import FsService
+
+
+class ActionExists(Action):
+
+    def __init__(self,
+                 arguments: Dict[str, Any],
+                 fs_service: FsService):
+        super().__init__(
+            "exists",
+            "checks the existing of a file or directory with arguments:\n"
+            "path - relative path to the file or directory",
+            arguments
+        )
+        self.fs = fs_service
+
+
+    @override
+    def to_json(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "arguments:": self.arguments
+        }
+
+
+    @override
+    def execute(self) -> ActionVerdict:
+        path = self.arguments.get("path")
+
+        if path is None:
+            return ActionVerdict(
+                ExitCode.MISSED_ARGUMENT,
+                f"see the description:\n{self.description}"
+            )
+
+        is_valid, reason, path_obj = self.fs.validate_path(path)
+        if not is_valid:
+            return ActionVerdict(
+                ExitCode.INVALID_ARGUMENT,
+                reason
+            )
+
+        if not self.fs.is_path_allowed(path):
+            return ActionVerdict(
+                ExitCode.INVALID_ARGUMENT,
+                f"given path is not allowed: {str(path)}"
+            )
+
+        return ActionVerdict(
+            ExitCode.SUCCESS,
+            "",
+            {"exists": path_obj.exists()}
+        )
