@@ -2,6 +2,8 @@
 @file agent/actions/dispatcher.py
 """
 
+import json
+from json import JSONDecodeError
 from typing import List, Optional, Dict, Any
 
 from .base import Action
@@ -34,9 +36,12 @@ class ActionDispatcher:
             )
 
 
-    def _parse(self, raw_input: str) -> Dict[str, Any]:
-        # TODO: raw input parser util
-        pass
+    def _parse(self, raw_input: str) -> tuple[List[Dict[str, Any]], str]:
+        try:
+            json_reply = json.loads(raw_input)
+
+        except JSONDecodeError as e:
+            return [], str(e)
 
 
     def _select_action(self, parsed: Dict[str, Any]) -> Optional[Action]:

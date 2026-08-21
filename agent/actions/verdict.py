@@ -15,6 +15,7 @@ class ExitCode(Enum):
     MISSED_ARGUMENT = "missed_argument"
     INVALID_ARGUMENT = "invalid_argument"
     EXECUTION_ERROR = "execution_error"
+    PROTOCOL_ERROR = "protocol_error"
 
     def __str__(self):
         return self.value
