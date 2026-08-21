@@ -2,7 +2,7 @@
 Contains defenition of logger to store last executed actions
 """
 
-from base import Action
+from .base import Action
 from typing import List, Optional
 
 class ActionLogger:
@@ -30,6 +30,7 @@ class ActionLogger:
         """
         Creates an instance of ActionLogger
         """
+        pass
 
     def push(self, action: Action) -> None:
         """
@@ -39,6 +40,19 @@ class ActionLogger:
             action (:obj:`Action`): Action which is going to be pushed.
         """
         self.actions.append(action)
+
+    @property
+    def actions(self):
+        """
+        TODO: Property
+        """
+        pass
+
+    def push_n(self, actions: List[Action]):
+        """
+        TODO: loop of Pushes into stack
+        """
+        pass
 
     def pop(self) -> Optional[Action]:
         """
@@ -65,3 +79,26 @@ class ActionLogger:
 
         return result
 
+    def len(self):
+        """
+        TODO: amount of actions in stack
+        """
+        pass
+    
+    def clear(self):
+        """
+        TODO: clear stack
+        """
+        pass
+
+    def __str__(self):
+        """
+        TODO
+        """
+        pass
+    
+    def __repr__(self):
+        """
+        TODO
+        """
+        pass
