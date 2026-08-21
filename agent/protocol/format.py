@@ -1,5 +1,5 @@
 """
-@file agent/format.py
+@file agent/protocol/format.py
 """
 
 from enum import Enum
@@ -14,9 +14,6 @@ class BotRequiredFields(Enum):
 
         class OptionalFields(Enum):
             ID = "id"               # string
-
-    def __str__(self):
-        return self.value
 
 
 class AgentRequiredFields(Enum):
