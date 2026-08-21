@@ -16,6 +16,11 @@ class FsService:
         ...
 
 
+    @property
+    def workspace_dir(self) -> Path:
+        ...
+
+
     def resolve_path(self, path: Path) -> Path:
         ...
 
@@ -81,13 +86,23 @@ class FsService:
         full_path.mkdir(parents=parents, exist_ok=True)
 
 
-    def listdir(self, path: Path) -> List[Path]:
+    def listdir(self, path: Path, max_depth: int) -> List[Path]:
         self._path_assert(path)
         self._dir_assert(path)
 
         full_path = self.resolve_path(path)
+        result = []
 
-        return list(full_path.iterdir())
+        def _walk(current: Path, depth: int):
+            if depth > max_depth:
+                return
+            for item in current.iterdir():
+                result.append(item)
+                if item.is_dir():
+                    _walk(item, depth + 1)
+
+        _walk(full_path, 1)
+        return result
 
 
     def create_file(self, path: Path, content: List[str] | None=None) -> None:
@@ -135,19 +150,7 @@ class FsService:
         }
 
 
-    def readline(self, path: Path, idx: int) -> str:
-        ...
-
-
     def readlines(self, path: Path, base: int, offset: int) -> List[str]:
-        ...
-
-
-    def insertline(self, path: Path, base: int, content: str) -> None:
-        ...
-
-
-    def appendline(self, path: Path, content: str) -> None:
         ...
 
 
@@ -156,4 +159,8 @@ class FsService:
 
 
     def appendlines(self, path: Path, content: List[str]) -> None:
+        ...
+
+
+    def replacelines(self, path: Path, base: int, offset: int, content: List[str]) -> None:
         ...
