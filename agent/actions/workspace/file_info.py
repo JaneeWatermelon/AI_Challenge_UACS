@@ -28,7 +28,8 @@ class ActionFileInfo(Action):
             "- permissions: unix permissions (e.g. 755)\n"
             "arguments:\n"
             "path - path to the file or directory (relative to workspace root)",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

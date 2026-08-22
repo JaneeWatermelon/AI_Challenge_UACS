@@ -157,7 +157,8 @@ class ActionExec(Action):
             "command - the command string to execute (required)\n"
             "timeout - max execution time in seconds (default: 15)\n"
             f"p.s. no shell, no pipes/chaining, allowed commands on this OS: {summary}",
-            arguments
+            arguments,
+            True    # CONTRACT, DO NOT ADD ANY NON-READONLY COMMAND
         )
         self.fs = fs_service
 

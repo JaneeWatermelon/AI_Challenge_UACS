@@ -19,7 +19,8 @@ class ActionExists(Action):
             "exists",
             "checks the existing of a file or directory with arguments:\n"
             "path - relative path to the file or directory",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 
