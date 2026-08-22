@@ -12,7 +12,7 @@ class ActionRegister:
 
     """
 
-    register: Dict[str, type[Action]] = {}
+    _register: Dict[str, type[Action]] = {}
 
     @staticmethod
     def add_action(name: str, action_type: type[Action]) -> None:

@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any
 
 from .verdict import ActionVerdict
+from .register import ActionRegister
 
 
 class Action(ABC):
@@ -14,9 +15,14 @@ class Action(ABC):
                  name: str,
                  description: str,
                  arguments: Dict[str, Any]):
-        self.name = name
+        self.register(name)
         self.description = description
         self.arguments = arguments
+
+
+    @classmethod
+    def register(cls, name: str):
+        ActionRegister.add_action(name, cls)
 
 
     @abstractmethod
