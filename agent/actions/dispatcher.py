@@ -3,36 +3,45 @@
 """
 
 from typing import List, Optional, Dict, Any
+from xxlimited_35 import Null
 
 from base import Action
 from verdict import ActionVerdict, ExitCode
 from AI_Challenge_UACS.agent.protocol.parser import BotResponseParser
-from AI_Challenge_UACS.agent.protocol.format import BotRequiredFields
+from AI_Challenge_UACS.agent.protocol.format import BotRequiredFields, has_ignore_action
+from AI_Challenge_UACS.agent.actions.context import Context
+from AI_Challenge_UACS.agent.protocol.format import abort_reply
 
 
 class ActionDispatcher:
+    """
+
+    """
+
+    def __init__(self):
+        self.context = Context()
 
 
     def dispatch(self, raw_input: str) -> Optional[List[ActionVerdict]]:
+        self.context.clear()
         parse_verdict, actions = self._parse(raw_input)
 
         if parse_verdict.code != ExitCode.SUCCESS:
             return [parse_verdict]
 
-        try:
-            for action in actions:
-                action.execute()
+        if has_ignore_action(actions):
+            return None
 
-        except Exception as e:
-            return [
-                ActionVerdict(
-                    ExitCode.EXECUTION_ERROR,
-                  f"execution aborted at {1}th\n"
-                  f"Execution interrupted.\n"
-                  f"All operations have been cancelled.\n"
-                  f"No changes were applied."
-                )
-            ]
+        for action in actions:
+            verdict = action.execute()
+
+            if verdict.code != ExitCode.SUCCESS:
+                self._rollback()
+                return abort_reply(self.context.done, verdict.details)
+
+            self.context.mark_execution_result(verdict)
+
+        return self.context.verdicts
 
 
     def _parse(self, raw_input: str) -> tuple[ActionVerdict, List[Action]]:
@@ -48,3 +57,6 @@ class ActionDispatcher:
 
         return BotResponseParser.parse_actions(actions_field)
 
+
+    def _rollback(self) -> List[ActionVerdict]:
+        ...
