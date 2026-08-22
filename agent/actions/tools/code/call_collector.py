@@ -30,7 +30,8 @@ class ActionCallCollector(Action):
             "files - list of file paths to analyze (required)\n"
             "name - optional: specific function name to find (default: all)\n"
             "returns: mapping file_path -> list of calls found",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

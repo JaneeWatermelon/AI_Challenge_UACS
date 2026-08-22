@@ -26,7 +26,8 @@ class ActionTree(Action):
             f"max_depth - maximum recursion depth (default: {DEFAULT_DEPTH})\n"
             "returns:\n"
             "endpoints: list of endpoints",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

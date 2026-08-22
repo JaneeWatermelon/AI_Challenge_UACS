@@ -332,7 +332,8 @@ class ActionCollectImports(Action):
             "collects import/include/using statements from source files, arguments:\n"
             "files - list of file paths to analyze (required)\n"
             "returns: mapping file_path -> list of import/include/using statements found",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

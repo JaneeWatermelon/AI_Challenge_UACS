@@ -22,7 +22,8 @@ class ActionRead(Action):
             "filename - name of a file to read\n"
             "base - start index of a range to read from\n"
             "offset - amount of lines to read",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

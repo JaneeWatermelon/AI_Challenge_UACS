@@ -40,7 +40,8 @@ class ActionModify(Action):
             "p.s.\n"
             "base is not required with append mode\n"
             f"default option is {ModifyOption.DELETE}",
-            arguments
+            arguments,
+            False
         )
         self.fs = fs_service
 
