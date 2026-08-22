@@ -324,7 +324,9 @@ PARSERS = {
 
 class ActionCollectImports(Action):
 
-    def __init__(self, arguments: Dict[str, Any], fs_service: FsService):
+    def __init__(self,
+                 arguments: Dict[str, Any],
+                 fs_service: FsService=FsService()):
         super().__init__(
             "collect_imports",
             "collects import/include/using statements from source files, arguments:\n"

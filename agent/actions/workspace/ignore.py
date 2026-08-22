@@ -10,8 +10,8 @@ from ..verdict import ActionVerdict, ExitCode
 
 class ActionIgnore(Action):
 
-    def __init__(self):
-        super().__init__("ignore", "ignoring a reply", {})
+    def __init__(self, arguments: Dict[str, Any]):
+        super().__init__("ignore", "ignoring a reply", arguments)
 
 
     @override

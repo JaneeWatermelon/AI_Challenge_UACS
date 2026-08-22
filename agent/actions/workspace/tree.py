@@ -18,7 +18,7 @@ class ActionTree(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService):
+                 fs_service: FsService=FsService()):
         super().__init__(
             "tree",
             "returns a directory tree structure, arguments:\n"

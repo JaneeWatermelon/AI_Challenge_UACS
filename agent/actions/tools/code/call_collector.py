@@ -21,7 +21,9 @@ _CALL_PATTERN = re.compile(
 
 class ActionCallCollector(Action):
 
-    def __init__(self, arguments: Dict[str, Any], fs_service: FsService):
+    def __init__(self,
+                 arguments: Dict[str, Any],
+                 fs_service: FsService=FsService()):
         super().__init__(
             "call_collector",
             "collects function/method calls from source files, arguments:\n"

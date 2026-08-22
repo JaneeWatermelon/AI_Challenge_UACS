@@ -17,7 +17,7 @@ class ActionGrep(Action):
     def __init__(self,
                 arguments: Dict[str, Any],
                 fs_service: FsService,
-                regex_service: RegexService):
+                regex_service: RegexService=RegexService()):
         super().__init__(
             "grep",
             "searches for a pattern in files, arguments:\n"

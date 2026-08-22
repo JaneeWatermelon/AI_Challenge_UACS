@@ -144,7 +144,9 @@ _OS_SPECIFIC = {"Linux": _LINUX_ONLY, "Darwin": _MACOS_ONLY, "Windows": _WINDOWS
 
 class ActionExec(Action):
 
-    def __init__(self, arguments: Dict[str, Any], fs_service: FsService):
+    def __init__(self,
+                 arguments: Dict[str, Any],
+                 fs_service: FsService=FsService()):
         allowed = self._allowed_commands()
         summary = ", ".join(sorted(set(allowed) | _PATH_READING_COMMANDS))
         super().__init__(
