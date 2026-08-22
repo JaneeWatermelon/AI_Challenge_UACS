@@ -5,6 +5,7 @@
 import json
 from typing import List, Dict, Any
 
+from AI_Challenge_UACS.agent.actions.register import ActionRegister
 from AI_Challenge_UACS.agent.actions.base import Action
 from AI_Challenge_UACS.agent.protocol.format import *
 
@@ -36,5 +37,7 @@ class BotResponseParser:
         for action in actions:
             name = action[ActionFields.ACTION.value]
             arguments = action[ActionFields.ARGUMENTS.value]
+            action_type = ActionRegister.
+            agent_todo.append()
 
         return agent_todo
