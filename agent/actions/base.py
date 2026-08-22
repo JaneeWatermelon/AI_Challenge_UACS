@@ -3,7 +3,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from .verdict import ActionVerdict
 from .register import ActionRegister
@@ -23,6 +23,11 @@ class Action(ABC):
     @classmethod
     def register(cls, name: str):
         ActionRegister.add_action(name, cls)
+
+
+    @classmethod
+    def from_arguments(cls, arguments: Dict[str, Any]):
+        return cls(arguments)
 
 
     @abstractmethod

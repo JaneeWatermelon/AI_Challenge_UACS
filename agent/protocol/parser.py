@@ -8,11 +8,12 @@ from typing import List, Dict, Any
 from AI_Challenge_UACS.agent.actions.register import ActionRegister
 from AI_Challenge_UACS.agent.actions.base import Action
 from AI_Challenge_UACS.agent.protocol.format import *
+from AI_Challenge_UACS.agent.actions.verdict import ExitCode, ActionVerdict
 
 
 class BotResponseParser:
     """
-
+    parsing bot response by `protocol.py` rules
     """
 
     @staticmethod
@@ -31,13 +32,24 @@ class BotResponseParser:
 
 
     @staticmethod
-    def parse_actions(actions: List[Dict[str, Any]]) -> List[Action]:
+    def parse_actions(actions: List[Dict[str, Any]]) -> tuple[ActionVerdict, List[Action]]:
         agent_todo = []
 
         for action in actions:
             name = action[ActionFields.ACTION.value]
             arguments = action[ActionFields.ARGUMENTS.value]
-            action_type = ActionRegister.
-            agent_todo.append()
+            action_type = ActionRegister.get_action(name)
 
-        return agent_todo
+            if action_type is None:
+                return ActionVerdict(
+                    ExitCode.PROTOCOL_ERROR,
+                    f"unknown action {name}"
+                ), []
+
+            action = action_type.from_arguments(arguments)
+            agent_todo.append(action)
+
+        return ActionVerdict(
+            ExitCode.SUCCESS,
+            "actions are parsed",
+        ), agent_todo
