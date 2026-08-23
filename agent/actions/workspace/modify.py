@@ -139,3 +139,9 @@ class ActionModify(Action):
 
         else:
             return self._insert(full_path, base, content)
+
+
+    @override
+    def reverse(self) -> "ActionModify":
+        #TODO: reverse delete, modify, insert actions
+        ...

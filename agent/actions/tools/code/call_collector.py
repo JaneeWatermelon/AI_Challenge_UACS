@@ -100,3 +100,11 @@ class ActionCallCollector(Action):
             "function calls collected",
             {"found": result}
         )
+
+
+    @override
+    def reverse(self) -> "ActionCallCollector":
+        """
+        read only action
+        """
+        return self

@@ -388,3 +388,11 @@ class ActionCollectImports(Action):
             "Imports collected",
             {"imports": result}
         )
+
+
+    @override
+    def reverse(self) -> "ActionCollectImports":
+        """
+        read only action
+        """
+        return self
