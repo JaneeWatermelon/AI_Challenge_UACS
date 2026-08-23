@@ -15,14 +15,15 @@ class ActionRead(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService):
+                 fs_service: FsService=FsService()):
         super().__init__(
             "read",
             "reads a range of lines by base and offset, arguments:\n"
             "filename - name of a file to read\n"
             "base - start index of a range to read from\n"
             "offset - amount of lines to read",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

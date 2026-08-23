@@ -26,7 +26,7 @@ class ActionModify(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService):
+                 fs_service: FsService=FsService()):
         super().__init__(
             "modify",
             "midify a file line(s), arguments:\n"
@@ -40,7 +40,8 @@ class ActionModify(Action):
             "p.s.\n"
             "base is not required with append mode\n"
             f"default option is {ModifyOption.DELETE}",
-            arguments
+            arguments,
+            False
         )
         self.fs = fs_service
 

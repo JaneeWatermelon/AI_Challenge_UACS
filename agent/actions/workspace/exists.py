@@ -14,12 +14,13 @@ class ActionExists(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService):
+                 fs_service: FsService=FsService()):
         super().__init__(
             "exists",
             "checks the existing of a file or directory with arguments:\n"
             "path - relative path to the file or directory",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

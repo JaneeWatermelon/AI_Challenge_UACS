@@ -15,7 +15,7 @@ class ActionFileInfo(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService):
+                 fs_service: FsService=FsService()):
         super().__init__(
             "file_info",
             "returns metadata about a file or directory:\n"
@@ -28,7 +28,8 @@ class ActionFileInfo(Action):
             "- permissions: unix permissions (e.g. 755)\n"
             "arguments:\n"
             "path - path to the file or directory (relative to workspace root)",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 

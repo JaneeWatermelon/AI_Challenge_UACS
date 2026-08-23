@@ -16,8 +16,8 @@ class ActionGrep(Action):
 
     def __init__(self,
                 arguments: Dict[str, Any],
-                fs_service: FsService,
-                regex_service: RegexService):
+                fs_service: FsService=FsService(),
+                regex_service: RegexService=RegexService()):
         super().__init__(
             "grep",
             "searches for a pattern in files, arguments:\n"
@@ -29,7 +29,8 @@ class ActionGrep(Action):
             "whole_word - match whole words only, default: false\n"
             "max_results - max matches returned, default: 100\n"
             "returns: list of matches with file path, line number, and content",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
         self.regex = regex_service

@@ -18,7 +18,7 @@ class ActionTree(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService):
+                 fs_service: FsService=FsService()):
         super().__init__(
             "tree",
             "returns a directory tree structure, arguments:\n"
@@ -26,7 +26,8 @@ class ActionTree(Action):
             f"max_depth - maximum recursion depth (default: {DEFAULT_DEPTH})\n"
             "returns:\n"
             "endpoints: list of endpoints",
-            arguments
+            arguments,
+            True
         )
         self.fs = fs_service
 
