@@ -30,7 +30,7 @@ if __name__ == "__main__":
         FsService()
     )
 
-    # ========== Пример 1: Базовое использование ==========
+    # Пример 1: Базовое использование
     print("Пример 1: Базовое использование")
     
     logger1 = ActionLogger()
@@ -45,28 +45,30 @@ if __name__ == "__main__":
     print(f"Извлечено: {popped}")
     print(f"Осталось: {logger1.actions}")
     
-    # ========== Пример 2: Демонстрация Singleton ==========
+    # Пример 2: Демонстрация Singleton
     print()
     print("Пример 2: Демонстрация Singleton")
     
     logger2 = ActionLogger()
-    logger2.push(Action("Действие из второго логгера"))
+    logger2.push(action1)
     
     print(f"logger1.actions: {logger1.actions}")
     print(f"logger2.actions: {logger2.actions}")
     print(f"Один ли это объект? {logger1 is logger2}")  # True
     
-    # ========== Пример 3: Извлечение нескольких действий ==========
+    # Пример 3: Извлечение и добавление нескольких действий
     print()
-    print("Пример 3: Извлечение нескольких действий (pop_n)")
+    print("Пример 3: Извлечение и добавление нескольких действий")
     
     logger3 = ActionLogger()
     # Очищаем предыдущие действия
     logger3.actions = []
     
-    logger3.push(action1)
-    logger3.push(action2)
-    logger3.push(action3)
+    logger3.push_n([
+        action1,
+        action2,
+        action3,
+    ])
     
     print(f"До pop_n: {logger3.actions}")
     
@@ -74,7 +76,7 @@ if __name__ == "__main__":
     print(f"Извлечено 3 действия: {popped_n}")
     print(f"Осталось: {logger3.actions}")
     
-    # ========== Пример 4: pop_n с n больше размера стека ==========
+    # Пример 4: pop_n с n больше размера стека
     print()
     print("Пример 4: pop_n с n больше размера стека")
     
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     print(f"Извлечено: {popped_all}")
     print(f"Осталось: {logger4.actions}")
     
-    # ========== Пример 5: pop на пустом стеке ==========
+    # Пример 5: pop на пустом стеке
     print()
     print("Пример 5: pop на пустом стеке")
     
@@ -101,4 +103,30 @@ if __name__ == "__main__":
     
     result = logger5.pop()
     print(f"Результат pop на пустом стеке: {result}")
+
+    # Пример 6: прямое пирсвоение
+    print()
+    print("Пример 6: прямое пирсвоение")
+
+    logger6 = ActionLogger()
+    logger6.clear()
+    logger6.push_n(action1)
+
+    print(f"До присвоения: {logger6.actions}")
+    logger6.actions = [
+        action1,
+        action2,
+        action3,
+    ]
+    print(f"После присвоения: {logger6.actions}")
+
+    # Пример 7: отладка
+    print()
+    print("Пример 7: отладка")
+
+    logger6 = ActionLogger()
+
+    print(f"len: {len(logger6)}")
+    print(f"str: {str(logger6)}")
+    print(f"repr: {repr(logger6)}")
 
