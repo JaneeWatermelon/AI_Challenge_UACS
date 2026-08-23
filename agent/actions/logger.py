@@ -3,7 +3,7 @@ Contains defenition of logger to store last executed actions
 """
 
 from .base import Action
-from typing import List, Optional
+from typing import List, Optional, Any
 
 class ActionLogger:
     """
@@ -15,7 +15,7 @@ class ActionLogger:
     """
 
     _instance = None
-    actions: List[Action] = []
+    _actions: List[Action] = []
 
     def __new__(cls, *args, **kwargs):
         """
@@ -32,27 +32,69 @@ class ActionLogger:
         """
         pass
 
+    def _check_actions(self, actions: List[Any]) -> bool:
+        """
+        Checks if 
+
+        Args:
+            value (List[:obj:`Action`]): List of actions which is going to replace old stack.
+        Returns:
+            bool: True if all actions' type is Action
+        Raises:
+            TypeError: If any `action` type in the list is not :obj:`Action`.
+        """
+        i = 0
+        while i < len(actions):
+            if not isinstance(actions[i], Action):
+                raise TypeError(f"actions[{i}] must be an Action instance, got {type(actions[i]).__name__}")
+            i += 1
+
+        return True
+
+    @property
+    def actions(self) -> List[Action]:
+        """
+        GET property for _actions
+        """
+        return self._actions
+    
+    @actions.setter
+    def actions(self, value: List[Action]) -> None:
+        """
+        SET property for _actions
+
+        Args:
+            value (List[:obj:`Action`]): List of actions which is going to replace old stack.
+        """
+        self._check_actions(value)
+        self._actions = value
+
     def push(self, action: Action) -> None:
         """
         Push an action to logger's stack.
 
         Args:
             action (:obj:`Action`): Action which is going to be pushed.
+        Raises:
+            TypeError: If `action` type is not :obj:`Action`.
         """
-        self.actions.append(action)
+        if not isinstance(action, Action):
+            raise TypeError(f"`action` must be an Action instance, got {type(action).__name__}")
+        
+        self._actions.append(action)
 
-    @property
-    def actions(self):
+    def push_n(self, actions: List[Action]) -> None:
         """
-        TODO: Property
-        """
-        pass
+        Push actions to logger's stack.
 
-    def push_n(self, actions: List[Action]):
+        Args:
+            actions (List[:obj:`Action`]): List of actions which is going to be pushed.
+        Raises:
+            TypeError: If `action` type is not :obj:`Action`.
         """
-        TODO: loop of Pushes into stack
-        """
-        pass
+        self._check_actions(actions)
+        for action in actions:
+            self.push(action)
 
     def pop(self) -> Optional[Action]:
         """
@@ -62,7 +104,7 @@ class ActionLogger:
             Action or None: if exists - popped action, else - None.
         """
         if len(self.actions) > 0:
-            return self.actions.pop()
+            return self._actions.pop()
         else:
             return None
         
@@ -74,31 +116,25 @@ class ActionLogger:
             List[Action]: List of actions.
         """
         first_index = max(len(self.actions)-n, 0)
-        result = self.actions[first_index:]
-        self.actions = self.actions[:first_index]
+        result = self._actions[first_index:]
+        self._actions = self._actions[:first_index]
 
         return result
-
-    def len(self):
-        """
-        TODO: amount of actions in stack
-        """
-        pass
     
-    def clear(self):
+    def clear(self) -> None:
         """
-        TODO: clear stack
+        Clear the stack
         """
-        pass
+        self._actions.clear()
+
+    def __len__(self):
+        return len(self._actions)
 
     def __str__(self):
-        """
-        TODO
-        """
-        pass
+        return f"ActionLogger(actions={self._actions})"
     
     def __repr__(self):
-        """
-        TODO
-        """
-        pass
+        return {
+            "count": len(self),
+            "actions": self._actions
+        }
