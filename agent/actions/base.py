@@ -42,3 +42,9 @@ class Action(ABC):
     @abstractmethod
     def execute(self) -> ActionVerdict:
         pass
+
+
+    @abstractmethod
+    def reverse(self):
+        pass
+    

@@ -33,3 +33,11 @@ class ActionIgnore(Action):
             ExitCode.SUCCESS,
             "ignored"
         )
+
+
+    @override
+    def reverse(self) -> "ActionFileInfo":
+        """
+        already reversed
+        """
+        return self

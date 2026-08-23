@@ -59,3 +59,11 @@ class ActionRead(Action):
             "ok",
             {"content": content}
         )
+
+
+    @override
+    def reverse(self) -> "ActionRead":
+        """
+        read only action (too obviously, lol)
+        """
+        return self

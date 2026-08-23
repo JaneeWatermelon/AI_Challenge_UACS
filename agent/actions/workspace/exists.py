@@ -63,3 +63,11 @@ class ActionExists(Action):
             "",
             {"exists": path_obj.exists()}
         )
+
+
+    @override
+    def reverse(self) -> "ActionExists":
+        """
+        read only action
+        """
+        return self

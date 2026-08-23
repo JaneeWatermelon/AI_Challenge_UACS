@@ -6,7 +6,6 @@ import json
 from typing import List, Dict, Any
 
 from AI_Challenge_UACS.agent.actions.register import ActionRegister
-from AI_Challenge_UACS.agent.actions.base import Action
 from AI_Challenge_UACS.agent.protocol.format import *
 from AI_Challenge_UACS.agent.actions.verdict import ExitCode, ActionVerdict
 

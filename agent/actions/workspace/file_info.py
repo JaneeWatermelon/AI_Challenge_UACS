@@ -61,3 +61,11 @@ class ActionFileInfo(Action):
             "verbose statistics",
             stat
         )
+
+
+    @override
+    def reverse(self) -> "ActionFileInfo":
+        """
+        read only action
+        """
+        return self

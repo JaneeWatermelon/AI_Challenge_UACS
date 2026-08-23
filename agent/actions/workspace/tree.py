@@ -59,3 +59,11 @@ class ActionTree(Action):
             "walked",
             {"endpoints": endpoints}
         )
+
+
+    @override
+    def reverse(self) -> "ActionTree":
+        """
+        read only action
+        """
+        return self

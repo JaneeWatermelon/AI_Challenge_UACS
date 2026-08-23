@@ -130,3 +130,11 @@ class ActionGrep(Action):
             "grep completed",
             {"found": result}
         )
+
+
+    @override
+    def reverse(self) -> "ActionGrep":
+        """
+        read only action
+        """
+        return self
