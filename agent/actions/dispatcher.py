@@ -35,8 +35,12 @@ class ActionDispatcher:
             verdict = action.execute()
 
             if verdict.code != ExitCode.SUCCESS:
-                self._rollback()
-                return abort_reply(self.context.done, verdict.details)
+                rollback_report = self._rollback(actions[:self.context.done+1])
+                return abort_reply(
+                    self.context.done,
+                    verdict.details,
+                    {"rollback": rollback_report}
+                )
 
             self.context.mark_execution_result(verdict)
 
@@ -51,11 +55,20 @@ class ActionDispatcher:
         if actions_field is None:
             return ActionVerdict(
                 ExitCode.PROTOCOL_ERROR,
-                f"required field {BotRequiredFields.ACTIONS.value} missed"
+                f"required field '{BotRequiredFields.ACTIONS.value}' missed"
+            ), []
+
+        if not isinstance(actions_field, list):
+            return ActionVerdict(
+                ExitCode.PROTOCOL_ERROR,
+                f"required field '{BotRequiredFields.ACTIONS.value}' has to be an array"
             ), []
 
         return BotResponseParser.parse_actions(actions_field)
 
 
-    def _rollback(self) -> List[ActionVerdict]:
-        ...
+    def _rollback(self, actions: List[Action]) -> List[ActionVerdict]:
+        return [
+            action.reverse() for action in actions
+            if not action.readonly
+        ]

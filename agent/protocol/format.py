@@ -3,7 +3,7 @@
 """
 
 from enum import Enum
-from typing import List
+from typing import List, Dict, Any
 
 from AI_Challenge_UACS.agent.actions.verdict import ActionVerdict, ExitCode
 from AI_Challenge_UACS.agent.actions.workspace.ignore import ActionIgnore
@@ -48,10 +48,14 @@ def has_ignore_action(actions: List[Action]) -> bool:
     return any(isinstance(action, ActionIgnore) for action in actions)
 
 
-def abort_reply(at: int, reason: str) -> List[ActionVerdict]:
+def abort_reply(at: int,
+                reason: str,
+                data: Dict[str, Any]
+    ) -> List[ActionVerdict]:
     return [
         ActionVerdict(
             ExitCode.EXECUTION_ERROR,
-            execution_aborted(at, reason)
+            execution_aborted(at, reason),
+            data
         )
     ]
