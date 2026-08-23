@@ -2,7 +2,6 @@
 @file agent/actions/workspace/modify/py
 """
 
-from dataclasses import dataclass
 from typing import Dict, Any, List, override
 from pathlib import Path
 from enum import Enum
@@ -11,31 +10,24 @@ from ..base import Action
 from ..verdict import ActionVerdict, ExitCode
 from ...utils.paths import FsService
 from ...utils.assertion import safe_verdict
+from ...models.record import Record
 
 
 class ModifyOption(Enum):
-    REPLACE="replace"
-    APPEND="append"
-    DELETE="delete"
-    INSERT="insert"
+    REPLACE = "replace"
+    APPEND = "append"
+    DELETE = "delete"
+    INSERT = "insert"
 
     def __str__(self):
         return self.value
-
-
-@dataclass
-class ModifyContext:
-    old_text: List[str]
-    modified_at: int
-    line_count: int
-    last_modified_path: Path
 
 
 class ActionModify(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         super().__init__(
             "modify",
             "midify a file line(s), arguments:\n"
@@ -53,7 +45,7 @@ class ActionModify(Action):
             False
         )
         self.fs = fs_service
-        self.context = ModifyContext([], -1, 0, Path())
+        self.context = Record(filename="", base=-1, content=[])
 
 
     @property
@@ -67,20 +59,16 @@ class ActionModify(Action):
 
 
     def update_context(self,
-                       *,
-                       old_text: List[str] | None,
-                       modified_at: int | None,
-                       linecount: int | None,
-                       last_modified_file: Path | None
+                        *,
+                        filename: str | None = None,
+                        base: int | None = None,
+                        content: List[str] | None = None
             ) -> None:
-        if old_text:
-            self.context.old_text = old_text
-        if modified_at:
-            self.context.modified_at = modified_at
-        if last_modified_file:
-            self.context.last_modified_path = last_modified_file
-        if linecount:
-            self.context.line_count = linecount
+        self.context = Record(
+            filename=filename if filename is not None else self.context.filename,
+            base=base if base is not None else self.context.base,
+            content=content if content is not None else self.context.content,
+        )
 
 
     def _replace(self,
@@ -90,9 +78,9 @@ class ActionModify(Action):
                  content: List[str]
             ) -> ActionVerdict:
         self.update_context(
-            old_text=self.fs.readlines(path, base, offset),
-            modified_at=base,
-            last_modified_file=path
+            filename=str(path),
+            base=base,
+            content=self.fs.readlines(path, base, offset)
         )
         self.fs.replacelines(path, base, offset, content)
         return ActionVerdict(
@@ -103,10 +91,10 @@ class ActionModify(Action):
 
     def _cancel_replace(self) -> ActionVerdict:
         return self._replace(
-            self.context.last_modified_path,
-            self.context.modified_at,
-            self.context.line_count,
-            self.context.old_text
+            Path(self.context.filename),
+            self.context.base,
+            len(self.context.content),
+            self.context.content
         )
 
 
@@ -116,18 +104,18 @@ class ActionModify(Action):
                 offset: int
             ) -> ActionVerdict:
         self.update_context(
-            old_text=self.fs.readlines(path, base, offset),
-            modified_at=base,
-            last_modified_file=path
+            filename=str(path),
+            base=base,
+            content=self.fs.readlines(path, base, offset)
         )
         return self._replace(path, base, offset, [""])
 
 
     def _cancel_delete(self) -> ActionVerdict:
         return self._insert(
-            self.context.last_modified_path,
-            self.context.modified_at,
-            self.context.old_text
+            Path(self.context.filename),
+            self.context.base,
+            self.context.content
         )
 
 
@@ -136,9 +124,9 @@ class ActionModify(Action):
                 content: List[str]
             ) -> ActionVerdict:
         self.update_context(
-            modified_at=self.fs.linecount(path),
-            last_modified_file=path,
-            linecount=len(content)
+            filename=str(path),
+            base=self.fs.linecount(path),
+            content=content
         )
         self.fs.appendlines(path, content)
         return ActionVerdict(
@@ -149,9 +137,9 @@ class ActionModify(Action):
 
     def _cancel_append(self) -> ActionVerdict:
         return self._delete(
-            self.context.last_modified_path,
-            self.context.modified_at,
-            self.context.line_count
+            Path(self.context.filename),
+            self.context.base,
+            len(self.context.content)
         )
 
 
@@ -160,6 +148,11 @@ class ActionModify(Action):
                 base: int,
                 content: List[str]
             ) -> ActionVerdict:
+        self.update_context(
+            filename=str(path),
+            base=base,
+            content=content
+        )
         self.fs.insertlines(path, base, content)
         return ActionVerdict(
             ExitCode.SUCCESS,
@@ -169,9 +162,9 @@ class ActionModify(Action):
 
     def _cancel_insert(self) -> ActionVerdict:
         return self._delete(
-            self.context.last_modified_path,
-            self.context.modified_at,
-            self.context.line_count
+            Path(self.context.filename),
+            self.context.base,
+            len(self.context.content)
         )
 
 
@@ -219,10 +212,10 @@ class ActionModify(Action):
     @override
     def reverse(self) -> ActionVerdict:
         mode_map = {
-            ModifyOption.DELETE: ActionModify._cancel_delete,
-            ModifyOption.INSERT: ActionModify._cancel_insert,
-            ModifyOption.APPEND: ActionModify._cancel_append,
-            ModifyOption.REPLACE: ActionModify._cancel_replace
+            ModifyOption.DELETE: self._cancel_delete,
+            ModifyOption.INSERT: self._cancel_insert,
+            ModifyOption.APPEND: self._cancel_append,
+            ModifyOption.REPLACE: self._cancel_replace,
         }
         canceler = mode_map[self.mode]
         return canceler()
