@@ -11,6 +11,9 @@ from ...utils.assertion import safe_verdict
 
 
 class ActionExists(Action):
+    """
+    действие проверки существования файла или директории
+    """
 
     def __init__(self,
                  arguments: Dict[str, Any],

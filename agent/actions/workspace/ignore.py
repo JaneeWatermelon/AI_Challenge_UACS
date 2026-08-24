@@ -9,6 +9,10 @@ from ..verdict import ActionVerdict, ExitCode
 
 
 class ActionIgnore(Action):
+    """
+    действие - признок конца сессии
+    игнорирует сообщение от модели
+    """
 
     def __init__(self, arguments: Dict[str, Any]):
         super().__init__(
@@ -36,7 +40,7 @@ class ActionIgnore(Action):
 
 
     @override
-    def reverse(self) -> "ActionFileInfo":
+    def reverse(self) -> "ActionIgnore":
         """
         already reversed
         """

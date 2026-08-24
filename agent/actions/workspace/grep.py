@@ -13,6 +13,9 @@ from ...utils.assertion import safe_verdict
 
 
 class ActionGrep(Action):
+    """
+    поиск строки в файле по патерну
+    """
 
     def __init__(self,
                 arguments: Dict[str, Any],

@@ -4,15 +4,20 @@
 
 from typing import List
 
-from AI_Challenge_UACS.agent.actions.verdict import ActionVerdict
+from agent.actions.verdict import ActionVerdict
 
 
 class Context:
     """
     dispatcher used context
+    используется диспатчером во
+    время цикла выполнения транзакции
     """
 
     def __init__(self):
+        """
+        инициализация себя
+        """
         self._verdicts = []
 
 
@@ -27,8 +32,16 @@ class Context:
 
 
     def mark_execution_result(self, verdict) -> None:
+        """
+        регистрация последнего выполненного действия
+        :param verdict: результат последнего действия
+        :return:    ничего
+        """
         self._verdicts.append(verdict)
 
 
     def clear(self) -> None:
+        """
+        очистка контекста
+        """
         self._verdicts.clear()

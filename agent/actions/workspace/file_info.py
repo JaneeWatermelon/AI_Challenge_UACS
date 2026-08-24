@@ -12,6 +12,9 @@ from ...utils.assertion import safe_verdict
 
 
 class ActionFileInfo(Action):
+    """
+    запрос информации о файле
+    """
 
     def __init__(self,
                  arguments: Dict[str, Any],

@@ -14,6 +14,10 @@ from ...models.record import Record
 
 
 class ModifyOption(Enum):
+    """
+    опции для модификации файла
+    """
+
     REPLACE = "replace"
     APPEND = "append"
     DELETE = "delete"
@@ -24,6 +28,9 @@ class ModifyOption(Enum):
 
 
 class ActionModify(Action):
+    """
+    действие изменения файла
+    """
 
     def __init__(self,
                  arguments: Dict[str, Any],
