@@ -10,10 +10,10 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, override
 
-from ...base import Action
-from ...verdict import ActionVerdict, ExitCode
-from ....utils.assertion import safe_verdict
-from ....utils.paths import FsService
+from agent.actions.base import Action
+from agent.actions.verdict import ActionVerdict, ExitCode
+from agent.utils.paths import FsService
+from agent.utils.assertion import safe_verdict
 
 
 DEFAULT_TIMEOUT = 5

@@ -5,8 +5,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
-from verdict import ActionVerdict
-from register import ActionRegister
+from agent.actions.verdict import ActionVerdict
+from agent.actions.register import ActionRegister
 
 
 class Action(ABC):

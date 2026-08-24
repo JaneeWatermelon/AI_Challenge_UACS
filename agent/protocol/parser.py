@@ -3,11 +3,10 @@
 """
 
 import json
-from typing import List, Dict, Any
 
-from AI_Challenge_UACS.agent.actions.register import ActionRegister
-from AI_Challenge_UACS.agent.protocol.format import *
-from AI_Challenge_UACS.agent.actions.verdict import ExitCode, ActionVerdict
+from agent.actions.register import ActionRegister
+from agent.protocol.format import *
+from agent.actions.verdict import ExitCode, ActionVerdict
 
 
 class BotResponseParser:

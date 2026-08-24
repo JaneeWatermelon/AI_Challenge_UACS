@@ -2,7 +2,7 @@
 @file agent/utils/assertion.py
 """
 
-from ..actions.verdict import ActionVerdict, ExitCode
+from agent.actions.verdict import ActionVerdict, ExitCode
 
 
 def safe_verdict(func):
