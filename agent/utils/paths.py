@@ -4,8 +4,8 @@
 
 import os
 from pathlib import Path
+import shutil
 from typing import List, Dict, Any, Optional
-
 
 class FsService:
     """
@@ -15,11 +15,21 @@ class FsService:
     (TODO: ``self.environment``).
     """
 
-    def __init__(self,
-                 #TODO: environment
-                 ):
-        #self.environment = environment
-        ...
+    def __init__(self, workspace_dir: Optional[Path] = None):
+        """
+        Initialize the filesystem service.
+
+        Args:
+            workspace_dir: root directory of the agent's workspace.
+                          If None, uses current working directory.
+        """
+        if workspace_dir is None:
+            self._workspace_dir = Path.cwd()
+        else:
+            self._workspace_dir = Path(workspace_dir).resolve()
+        
+        # Ensure workspace directory exists
+        self._workspace_dir.mkdir(parents=True, exist_ok=True)
 
 
     @property
@@ -27,7 +37,7 @@ class FsService:
         """
         :return: the root directory of the agent's workspace.
         """
-        ...
+        return self._workspace_dir
 
 
     def resolve_path(self, path: Path) -> Path:
@@ -44,7 +54,18 @@ class FsService:
         :return: resolved absolute path.
         :raises: file or directory does not exist.
         """
-        ...
+        full_path = (self._workspace_dir / path).resolve()
+        
+        # Check if path is within workspace (security check)
+        try:
+            full_path.relative_to(self._workspace_dir)
+        except ValueError:
+            raise PermissionError(f"Path outside workspace: {path}")
+        
+        if not full_path.exists():
+            raise FileNotFoundError(f"Path does not exist: {path}")
+        
+        return full_path
 
 
     def is_path_allowed(self, path: Path) -> bool:
@@ -54,8 +75,12 @@ class FsService:
         :param path: workspace-relative path.
         :return: ``True`` if it exists, ``False`` otherwise.
         """
-        #TODO: environment checking
-        ...
+        try:
+            full_path = (self._workspace_dir / path).resolve()
+            full_path.relative_to(self._workspace_dir)
+            return full_path.exists() # ??? TODO: i think its not need
+        except (ValueError, FileNotFoundError):
+            return False
 
 
     def _path_assert(self, path: Path) -> Path:
@@ -63,7 +88,7 @@ class FsService:
         Resolve a path and verify it is allowed.
 
         :param path: relative path.
-        :return: resolved path, if allowed.
+        :return Path: resolved path, if allowed.
         :raises PermissionError: if the path is not allowed in the environment.
         """
         full_path = self.resolve_path(path)
@@ -74,11 +99,12 @@ class FsService:
         return full_path
 
 
-    def _dir_assert(self, path: Path) -> None:
+    def _dir_assert(self, path: Path) -> Path:
         """
         Verify that a path points to an existing, allowed **directory**.
 
         :param path: relative path to a directory.
+        :return Path: resolved dir path, if allowed.
         :raises FileNotFoundError: if the directory does not exist.
         :raises NotADirectoryError: if the path is not a directory.
         """
@@ -89,6 +115,8 @@ class FsService:
 
         if not full_path.is_dir():
             raise NotADirectoryError(f"expected path to a directory, given: {str(path)}")
+
+        return full_path
 
 
     def _file_assert(self, path: Path) -> None:
@@ -143,14 +171,12 @@ class FsService:
         :param path: path to the new directory.
         :param parents: equivalent to ``mkdir -p``.
         """
-        self._path_assert(path)
-
-        full_path = self.resolve_path(path)
+        full_path = self._path_assert(path)
 
         full_path.mkdir(parents=parents, exist_ok=True)
 
 
-    def listdir(self, path: Path, max_depth: int) -> List[Path]:
+    def listdir(self, path: Path, max_depth: int = 1) -> List[Path]:
         """
         Scan a directory for its entries, up to a maximum depth.
 
@@ -158,19 +184,22 @@ class FsService:
         :param max_depth: maximum depth of entries to include.
         :return: list of discovered entries.
         """
-        self._path_assert(path)
-        self._dir_assert(path)  # a file has no relative entries
-
-        full_path = self.resolve_path(path)
+        full_path = self._dir_assert(path)
         result = []
 
         def _walk(current: Path, depth: int):
             if depth > max_depth:
                 return
-            for item in current.iterdir():
-                result.append(item)
-                if item.is_dir():
-                    _walk(item, depth + 1)
+            try:
+                for item in current.iterdir():
+                    # Convert to relative path for result
+                    rel_path = item.relative_to(self._workspace_dir)
+                    result.append(rel_path)
+                    if item.is_dir():
+                        _walk(item, depth + 1)
+            except PermissionError:
+                # Skip directories without read permissions
+                pass
 
         _walk(full_path, 1)
         return result
@@ -178,7 +207,7 @@ class FsService:
 
     def create_file(self,
                     path: Path,
-                    content: List[str] | None=None
+                    content: List[str] | None=None # TODO: it's a bit specific to pass List[str] instead of raw Str
             ) -> None:
         """
         Create a new file at an allowed path.
@@ -187,11 +216,13 @@ class FsService:
         :param content: optional initial content for the new file.
         :raises RuntimeError: if the file already exists.
         """
-        self._path_assert(path) # is the path workspace-root-relative?
+        full_path = self._path_assert(path)
 
-        full_path = self.resolve_path(path)
         if full_path.exists():
             raise RuntimeError(f"file already exists: {str(path)}")
+
+        # Create parent directories if they don't exist
+        full_path.parent.mkdir(parents=True, exist_ok=True)
 
         full_path.touch(exist_ok=False)
 
@@ -207,21 +238,25 @@ class FsService:
 
         :param path: workspace-relative path to remove.
         """
-        self._path_assert(path)
+        full_path = self._path_assert(path)
 
-        full_path = self.resolve_path(path)
-        os.remove(full_path)
+        if full_path.is_dir():
+            shutil.rmtree(full_path)
+        else:
+            full_path.unlink()
 
 
     def rename(self, path: Path, target: str) -> None:
         """
         #TODO: DEPRECATED
         """
-        self._path_assert(path)
-
-        full_path = self.resolve_path(path)
-
-        full_path.rename(target)
+        full_path = self._path_assert(path)
+        
+        # Resolve target path (relative to workspace)
+        target_path = self._workspace_dir / target
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        full_path.rename(target_path)
 
 
     def get_metadata(self, path: Path) -> Dict[str, Any]:
@@ -232,9 +267,7 @@ class FsService:
         :return: a metadata mapping (``name``, ``path``, ``is_file``,
             ``is_dir``, ``size``, ``modified``, ``permissions``).
         """
-        self._path_assert(path)
-
-        full_path = self.resolve_path(path)
+        full_path = self._path_assert(path)
         stat = full_path.stat()
 
         return {
@@ -256,7 +289,19 @@ class FsService:
         :param offset: number of lines to read.
         :return: the read lines.
         """
-        ...
+        full_path = self._file_assert(path)
+        
+        with open(full_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        
+        # Handle edge cases
+        base = max(0, base)
+        if base >= len(lines):
+            return []
+        
+        end = min(base + offset, len(lines))
+        # Strip newline characters but preserve empty lines
+        return [line.rstrip('\n') for line in lines[base:end]]
 
     def insertlines(self, path: Path, base: int, content: List[str]) -> None:
         """
@@ -267,7 +312,21 @@ class FsService:
         :param base: 0-based line number to insert at.
         :param content: lines to insert.
         """
-        ...
+        full_path = self._file_assert(path)
+        
+        with open(full_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            
+        
+        # Handle edge cases
+        base = max(0, base)
+        base = min(base, len(lines))
+        
+        # Insert content
+        lines = lines[:base] + [line + '\n' for line in content] + lines[base:]
+        
+        with open(full_path, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
 
     def appendlines(self, path: Path, content: List[str]) -> None:
         """
@@ -276,7 +335,11 @@ class FsService:
         :param path: path to the file.
         :param content: lines to append.
         """
-        ...
+        full_path = self._file_assert(path)
+        
+        with open(full_path, 'a', encoding='utf-8') as f:
+            for line in content:
+                f.write(line + '\n')
 
     def replacelines(self, path: Path, base: int, offset: int, content: List[str]) -> None:
         """
@@ -287,4 +350,20 @@ class FsService:
         :param offset: number of lines to replace.
         :param content: lines to replace them with.
         """
-        ...
+        full_path = self._file_assert(path)
+        
+        with open(full_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        
+        # Handle edge cases
+        base = max(0, base)
+        if base >= len(lines):
+            # If base beyond end, just append
+            lines.extend([line + '\n' for line in content])
+        else:
+            end = min(base + offset, len(lines))
+            # Replace the range
+            lines[base:end] = [line + '\n' for line in content]
+        
+        with open(full_path, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
