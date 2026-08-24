@@ -119,7 +119,7 @@ class FsService:
         return full_path
 
 
-    def _file_assert(self, path: Path) -> None:
+    def _file_assert(self, path: Path) -> Path:
         """
         Verify that a path points to an existing, allowed **file**.
 
@@ -134,6 +134,8 @@ class FsService:
 
         if not full_path.is_file():
             raise ValueError(f"expected path to a file, given: {str(path)}")
+
+        return full_path
 
 
     @staticmethod
