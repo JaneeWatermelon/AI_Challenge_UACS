@@ -4,11 +4,15 @@
 
 from typing import Dict, Any, override
 
-from ..base import Action
-from ..verdict import ActionVerdict, ExitCode
+from agent.actions.base import Action
+from agent.actions.verdict import ActionVerdict, ExitCode
 
 
 class ActionIgnore(Action):
+    """
+    действие - признок конца сессии
+    игнорирует сообщение от модели
+    """
 
     def __init__(self, arguments: Dict[str, Any]):
         super().__init__(
@@ -33,3 +37,11 @@ class ActionIgnore(Action):
             ExitCode.SUCCESS,
             "ignored"
         )
+
+
+    @override
+    def reverse(self) -> "ActionIgnore":
+        """
+        already reversed
+        """
+        return self

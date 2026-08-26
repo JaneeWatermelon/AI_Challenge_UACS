@@ -5,13 +5,16 @@
 from typing import Dict, Any, override
 from pathlib import Path
 
-from ..base import Action
-from ..verdict import ActionVerdict, ExitCode
-from ...utils.paths import FsService
-from ...utils.assertion import safe_verdict
+from agent.actions.base import Action
+from agent.actions.verdict import ActionVerdict, ExitCode
+from agent.utils.paths import FsService
+from agent.utils.assertion import safe_verdict
 
 
 class ActionFileInfo(Action):
+    """
+    запрос информации о файле
+    """
 
     def __init__(self,
                  arguments: Dict[str, Any],
@@ -61,3 +64,11 @@ class ActionFileInfo(Action):
             "verbose statistics",
             stat
         )
+
+
+    @override
+    def reverse(self) -> "ActionFileInfo":
+        """
+        read only action
+        """
+        return self

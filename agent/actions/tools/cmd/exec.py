@@ -10,10 +10,10 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, override
 
-from ...base import Action
-from ...verdict import ActionVerdict, ExitCode
-from ....utils.assertion import safe_verdict
-from ....utils.paths import FsService
+from agent.actions.base import Action
+from agent.actions.verdict import ActionVerdict, ExitCode
+from agent.utils.paths import FsService
+from agent.utils.assertion import safe_verdict
 
 
 DEFAULT_TIMEOUT = 5
@@ -158,7 +158,10 @@ class ActionExec(Action):
             "timeout - max execution time in seconds (default: 15)\n"
             f"p.s. no shell, no pipes/chaining, allowed commands on this OS: {summary}",
             arguments,
-            True    # CONTRACT, DO NOT ADD ANY NON-READONLY COMMAND
+            # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+            # CONTRACT, DO NOT ADD ANY NON-READONLY COMMAND v
+            # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+            True
         )
         self.fs = fs_service
 
@@ -276,3 +279,11 @@ class ActionExec(Action):
                 "stderr": result.stderr,
             }
         )
+
+
+    @override
+    def reverse(self) -> "ActionExec":
+        """
+        read only action (see `self.__init__`)
+        """
+        return self

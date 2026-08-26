@@ -6,10 +6,10 @@ from typing import Dict, Any, override
 from pathlib import Path
 from enum import Enum
 
-from ...base import Action
-from ...verdict import ActionVerdict, ExitCode
-from ....utils.assertion import safe_verdict
-from ....utils.paths import FsService
+from agent.actions.base import Action
+from agent.actions.verdict import ActionVerdict, ExitCode
+from agent.utils.paths import FsService
+from agent.utils.assertion import safe_verdict
 
 
 class ImportKeyword(Enum):
@@ -388,3 +388,11 @@ class ActionCollectImports(Action):
             "Imports collected",
             {"imports": result}
         )
+
+
+    @override
+    def reverse(self) -> "ActionCollectImports":
+        """
+        read only action
+        """
+        return self

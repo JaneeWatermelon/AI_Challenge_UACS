@@ -4,13 +4,16 @@
 
 from typing import Dict, Any, override
 
-from ..base import Action
-from ..verdict import ActionVerdict, ExitCode
-from ...utils.paths import FsService
-from ...utils.assertion import safe_verdict
+from agent.actions.base import Action
+from agent.actions.verdict import ActionVerdict, ExitCode
+from agent.utils.paths import FsService
+from agent.utils.assertion import safe_verdict
 
 
 class ActionExists(Action):
+    """
+    действие проверки существования файла или директории
+    """
 
     def __init__(self,
                  arguments: Dict[str, Any],
@@ -63,3 +66,11 @@ class ActionExists(Action):
             "",
             {"exists": path_obj.exists()}
         )
+
+
+    @override
+    def reverse(self) -> "ActionExists":
+        """
+        read only action
+        """
+        return self

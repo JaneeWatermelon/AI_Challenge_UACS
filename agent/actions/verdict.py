@@ -7,6 +7,10 @@ from typing import Dict, Any
 
 
 class ExitCode(Enum):
+    """
+    результаты выполнения действия
+    """
+
     SUCCESS = "success"
     NO_ACTION_SELECTED = "no_action_selected"
     LOGIC_ERROR = "logic_error"
@@ -22,8 +26,20 @@ class ExitCode(Enum):
 
 
 class ActionVerdict:
+    """
+    представление результата действия агента
+    """
 
-    def __init__(self, code: ExitCode, details: str = "", result: Dict[str, Any] = {}):
+    def __init__(self,
+                 code: ExitCode,
+                 details: str = "",
+                 result: Dict[str, Any] = {}):
+        """
+        инициализация себя
+        :param code:    код возврата
+        :param details: детали выполнения
+        :param result:  полезная нагрузка, данные
+        """
         self.code = code
         self.details = details
         self.result = result

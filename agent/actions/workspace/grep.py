@@ -5,14 +5,17 @@
 from pathlib import Path
 from typing import Dict, Any, override, Pattern
 
-from ..base import Action
-from ..verdict import ActionVerdict, ExitCode
-from ...utils.paths import FsService
-from ...utils.regex import RegexService
-from ...utils.assertion import safe_verdict
+from agent.actions.base import Action
+from agent.actions.verdict import ActionVerdict, ExitCode
+from agent.utils.paths import FsService
+from agent.utils.regex import RegexService
+from agent.utils.assertion import safe_verdict
 
 
 class ActionGrep(Action):
+    """
+    поиск строки в файле по патерну
+    """
 
     def __init__(self,
                 arguments: Dict[str, Any],
@@ -130,3 +133,11 @@ class ActionGrep(Action):
             "grep completed",
             {"found": result}
         )
+
+
+    @override
+    def reverse(self) -> "ActionGrep":
+        """
+        read only action
+        """
+        return self
