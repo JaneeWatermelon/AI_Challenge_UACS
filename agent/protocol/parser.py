@@ -4,9 +4,9 @@
 
 import json
 
-from agent.actions.register import ActionRegister
-from agent.protocol.format import *
-from agent.actions.verdict import ExitCode, ActionVerdict
+from actions.register import ActionRegister
+from protocol.format import *
+from actions.verdict import ExitCode, ActionVerdict
 
 
 class BotResponseParser:

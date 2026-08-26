@@ -4,7 +4,7 @@
 
 from typing import List
 
-from agent.actions.verdict import ActionVerdict
+from actions.verdict import ActionVerdict
 
 
 class Context:

@@ -4,8 +4,8 @@
 
 from typing import Dict, Any, override
 
-from agent.actions.base import Action
-from agent.actions.verdict import ActionVerdict, ExitCode
+from actions.base import Action
+from actions.verdict import ActionVerdict, ExitCode
 
 
 class ActionIgnore(Action):

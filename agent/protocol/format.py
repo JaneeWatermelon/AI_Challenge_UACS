@@ -5,10 +5,10 @@
 from enum import Enum
 from typing import List, Dict, Any
 
-from agent.actions.verdict import ActionVerdict, ExitCode
-from agent.actions.workspace.ignore import ActionIgnore
-from agent.actions.base import Action
-from agent.actions.details import execution_aborted
+from actions.verdict import ActionVerdict, ExitCode
+from actions.workspace.ignore import ActionIgnore
+from actions.base import Action
+from actions.details import execution_aborted
 
 
 class BotRequiredFields(Enum):

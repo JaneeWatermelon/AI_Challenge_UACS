@@ -6,11 +6,11 @@ from typing import Dict, Any, List, override
 from pathlib import Path
 from enum import Enum
 
-from agent.actions.base import Action
-from agent.actions.verdict import ActionVerdict, ExitCode
-from agent.utils.paths import FsService
-from agent.utils.assertion import safe_verdict
-from agent.models.record import Record
+from actions.base import Action
+from actions.verdict import ActionVerdict, ExitCode
+from utils.paths import FsService
+from utils.assertion import safe_verdict
+from models.record import Record
 
 
 class ModifyOption(Enum):

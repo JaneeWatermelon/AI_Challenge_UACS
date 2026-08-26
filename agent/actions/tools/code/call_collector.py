@@ -6,12 +6,12 @@ import re
 from pathlib import Path
 from typing import Dict, Any, List, Optional, override
 
-from agent.actions.base import Action
-from agent.actions.verdict import ActionVerdict, ExitCode
-from agent.models.record import Record
-from agent.utils.paths import FsService
-from agent.utils.regex import RegexService
-from agent.utils.assertion import safe_verdict
+from actions.base import Action
+from actions.verdict import ActionVerdict, ExitCode
+from models.record import Record
+from utils.paths import FsService
+from utils.regex import RegexService
+from utils.assertion import safe_verdict
 
 
 _CALL_PATTERN = re.compile(

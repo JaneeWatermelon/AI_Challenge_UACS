@@ -4,7 +4,7 @@
 
 from typing import Dict, Optional
 
-from agent.actions.base import Action
+from actions.base import Action
 
 
 class ActionRegister:

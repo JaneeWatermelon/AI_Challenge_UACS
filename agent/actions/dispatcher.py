@@ -4,12 +4,12 @@
 
 from typing import List, Optional
 
-from agent.actions.base import Action
-from agent.actions.verdict import ActionVerdict, ExitCode
-from agent.protocol.parser import BotResponseParser
-from agent.protocol.format import BotRequiredFields, has_ignore_action
-from agent.actions.context import Context
-from agent.protocol.format import abort_reply
+from actions.base import Action
+from actions.verdict import ActionVerdict, ExitCode
+from protocol.parser import BotResponseParser
+from protocol.format import BotRequiredFields, has_ignore_action
+from actions.context import Context
+from protocol.format import abort_reply
 
 
 class ActionDispatcher:

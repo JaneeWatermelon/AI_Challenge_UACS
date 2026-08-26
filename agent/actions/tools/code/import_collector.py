@@ -6,10 +6,10 @@ from typing import Dict, Any, override
 from pathlib import Path
 from enum import Enum
 
-from agent.actions.base import Action
-from agent.actions.verdict import ActionVerdict, ExitCode
-from agent.utils.paths import FsService
-from agent.utils.assertion import safe_verdict
+from actions.base import Action
+from actions.verdict import ActionVerdict, ExitCode
+from utils.paths import FsService
+from utils.assertion import safe_verdict
 
 
 class ImportKeyword(Enum):
