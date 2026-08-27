@@ -17,7 +17,7 @@ class ActionTree(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         super().__init__(
             "tree",
             "returns a directory tree structure, arguments:\n"
@@ -30,11 +30,9 @@ class ActionTree(Action):
         )
         self.fs = fs_service
 
-
     @property
     def workspace_dir(self) -> Path:
         return self.fs.workspace_dir
-
 
     @override
     def to_json(self) -> Dict[str, Any]:
@@ -44,7 +42,6 @@ class ActionTree(Action):
             "arguments": self.arguments,
             "workspace_dir": self.workspace_dir,
         }
-
 
     @override
     @safe_verdict
@@ -58,7 +55,6 @@ class ActionTree(Action):
             "walked",
             {"endpoints": endpoints}
         )
-
 
     @override
     def reverse(self) -> "ActionTree":

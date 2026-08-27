@@ -58,7 +58,6 @@ class ActionModify(Action):
         self.fs = fs_service
         self.context = Record(filename="", base=-1, content=[])
 
-
     @property
     def mode(self) -> ModifyOption:
         """
@@ -72,13 +71,12 @@ class ActionModify(Action):
         }
         return mode_map.get(self.arguments.get("mode"), ModifyOption.REPLACE)
 
-
     def update_context(self,
-                        *,
-                        filename: str | None = None,
-                        base: int | None = None,
-                        content: List[str] | None = None
-            ) -> None:
+                       *,
+                       filename: str | None = None,
+                       base: int | None = None,
+                       content: List[str] | None = None
+                       ) -> None:
         """
         Update ``self.context`` with the given fields, keeping any
         omitted field unchanged.
@@ -93,13 +91,12 @@ class ActionModify(Action):
             content=content if content is not None else self.context.content,
         )
 
-
     def _replace(self,
                  path: Path,
                  base: int,
                  offset: int,
                  content: List[str]
-            ) -> ActionVerdict:
+                 ) -> ActionVerdict:
         """
         Replace ``offset`` lines starting at ``base`` with ``content``.
 
@@ -117,7 +114,6 @@ class ActionModify(Action):
             f"{ModifyOption.REPLACE}"
         )
 
-
     def _cancel_replace(self) -> ActionVerdict:
         """
         Undo the last :meth:`_replace` by writing the saved old lines back.
@@ -129,12 +125,11 @@ class ActionModify(Action):
             self.context.content
         )
 
-
     def _delete(self,
                 path: Path,
                 base: int,
                 offset: int
-            ) -> ActionVerdict:
+                ) -> ActionVerdict:
         """
         Delete ``offset`` lines starting at ``base`` (implemented as a
         replace with an empty line, after saving the old content).
@@ -146,7 +141,6 @@ class ActionModify(Action):
         )
         return self._replace(path, base, offset, [""])
 
-
     def _cancel_delete(self) -> ActionVerdict:
         """
         Undo the last :meth:`_delete` by re-inserting the saved lines.
@@ -157,11 +151,10 @@ class ActionModify(Action):
             self.context.content
         )
 
-
     def _append(self,
                 path: Path,
                 content: List[str]
-            ) -> ActionVerdict:
+                ) -> ActionVerdict:
         """
         Append ``content`` to the end of the file.
 
@@ -179,7 +172,6 @@ class ActionModify(Action):
             f"{ModifyOption.APPEND}"
         )
 
-
     def _cancel_append(self) -> ActionVerdict:
         """
         Undo the last :meth:`_append` by deleting the appended lines.
@@ -190,12 +182,11 @@ class ActionModify(Action):
             len(self.context.content)
         )
 
-
     def _insert(self,
                 path: Path,
                 base: int,
                 content: List[str]
-            ) -> ActionVerdict:
+                ) -> ActionVerdict:
         """
         Insert ``content`` at line ``base``, without overwriting
         existing lines.
@@ -211,7 +202,6 @@ class ActionModify(Action):
             f"{ModifyOption.INSERT}"
         )
 
-
     def _cancel_insert(self) -> ActionVerdict:
         """
         Undo the last :meth:`_insert` by deleting the inserted lines.
@@ -222,7 +212,6 @@ class ActionModify(Action):
             len(self.context.content)
         )
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -230,7 +219,6 @@ class ActionModify(Action):
             "description": self.description,
             "arguments": self.arguments,
         }
-
 
     @override
     @safe_verdict
@@ -272,7 +260,6 @@ class ActionModify(Action):
 
         else:
             return self._insert(full_path, base, content)
-
 
     @override
     def reverse(self) -> ActionVerdict:

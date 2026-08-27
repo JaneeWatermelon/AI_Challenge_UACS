@@ -30,7 +30,6 @@ _GLOBAL_LOG_DIRS_BY_OS = {
 
 _PATH_READING_COMMANDS = {"cat", "tail", "head", "grep"}
 
-
 Validator = Callable[[List[str]], None]
 
 
@@ -45,6 +44,7 @@ def _denied_flags(denied: Set[str]) -> Validator:
         hit = [a for a in args if a in denied]
         if hit:
             raise PermissionError(f"flags not allowed: {hit}")
+
     return _v
 
 
@@ -53,6 +53,7 @@ def _denied_words(denied: Set[str]) -> Validator:
         hit = [a for a in args if a.lower() in denied]
         if hit:
             raise PermissionError(f"arguments not allowed: {hit}")
+
     return _v
 
 
@@ -101,7 +102,6 @@ _CROSS_PLATFORM: Dict[str, Optional[Validator]] = {
     "where": None,
 }
 
-
 _LINUX_ONLY: Dict[str, Optional[Validator]] = {
     "uname": None,
     "uptime": None,
@@ -119,7 +119,6 @@ _LINUX_ONLY: Dict[str, Optional[Validator]] = {
     "w": None,
 }
 
-
 _MACOS_ONLY: Dict[str, Optional[Validator]] = {
     "uname": None,
     "uptime": None,
@@ -127,7 +126,6 @@ _MACOS_ONLY: Dict[str, Optional[Validator]] = {
     "ifconfig": _denied_words({"up", "down", "delete", "del", "destroy", "add", "alias", "-alias"}),
     "netstat": None,
 }
-
 
 _WINDOWS_ONLY: Dict[str, Optional[Validator]] = {
     "wmic": _wmic_validator,
@@ -137,7 +135,6 @@ _WINDOWS_ONLY: Dict[str, Optional[Validator]] = {
     "wevtutil": _wevtutil_validator,
 }
 
-
 _OS_SPECIFIC = {"Linux": _LINUX_ONLY, "Darwin": _MACOS_ONLY, "Windows": _WINDOWS_ONLY}
 
 
@@ -145,7 +142,7 @@ class ActionExec(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         allowed = self._allowed_commands()
         summary = ", ".join(sorted(set(allowed) | _PATH_READING_COMMANDS))
         super().__init__(
@@ -164,7 +161,6 @@ class ActionExec(Action):
         )
         self.fs = fs_service
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -173,16 +169,13 @@ class ActionExec(Action):
             "arguments": self.arguments,
         }
 
-
     @staticmethod
     def _allowed_commands() -> Dict[str, Optional[Validator]]:
         return {**_CROSS_PLATFORM, **_OS_SPECIFIC.get(_OS, {})}
 
-
     @staticmethod
     def _global_log_dirs() -> tuple:
         return _GLOBAL_LOG_DIRS_BY_OS.get(_OS, ())
-
 
     @staticmethod
     def _is_under(path: Path, root: Path) -> bool:
@@ -192,7 +185,6 @@ class ActionExec(Action):
 
         except ValueError:
             return False
-
 
     def _assert_path_arg_is_global(self, raw_arg: str) -> None:
         resolved = Path(os.path.realpath(raw_arg))
@@ -206,7 +198,6 @@ class ActionExec(Action):
             raise PermissionError(
                 f"path is outside allowed global log directories {allowed_dirs}: {raw_arg}"
             )
-
 
     @override
     @safe_verdict
@@ -251,7 +242,7 @@ class ActionExec(Action):
         try:
             result = subprocess.run(
                 args,
-                shell=False,                # '|', ':', '`' and so on is forbidden
+                shell=False,  # '|', ':', '`' and so on is forbidden
                 cwd=tempfile.gettempdir(),  # neutral directory
                 capture_output=True,
                 text=True,
@@ -278,7 +269,6 @@ class ActionExec(Action):
                 "stderr": result.stderr,
             }
         )
-
 
     @override
     def reverse(self) -> "ActionExec":

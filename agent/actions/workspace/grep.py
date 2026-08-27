@@ -18,9 +18,9 @@ class ActionGrep(Action):
     """
 
     def __init__(self,
-                arguments: Dict[str, Any],
-                fs_service: FsService=FsService(),
-                regex_service: RegexService=RegexService()):
+                 arguments: Dict[str, Any],
+                 fs_service: FsService = FsService(),
+                 regex_service: RegexService = RegexService()):
         super().__init__(
             "grep",
             "searches for a pattern in files, arguments:\n"
@@ -38,14 +38,12 @@ class ActionGrep(Action):
         self.fs = fs_service
         self.regex = regex_service
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "description": self.description,
         }
-
 
     def _search_file(
             self,
@@ -74,20 +72,18 @@ class ActionGrep(Action):
 
         return result
 
-
     def _get_files(self, path: Path, recursive: bool) -> list[Path]:
 
         if path.is_file():
             return [path]
 
-        depth = 1 if not recursive else 2**31 - 1
+        depth = 1 if not recursive else 2 ** 31 - 1
 
         return [
             item
             for item in self.fs.listdir(path, depth)
             if item.is_file()
         ]
-
 
     @override
     @safe_verdict
@@ -133,7 +129,6 @@ class ActionGrep(Action):
             "grep completed",
             {"found": result}
         )
-
 
     @override
     def reverse(self) -> "ActionGrep":

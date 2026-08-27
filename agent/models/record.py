@@ -8,7 +8,6 @@ from typing import List
 
 @dataclass
 class Record:
-
     filename: str
     base: int
     content: List[str]

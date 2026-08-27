@@ -22,7 +22,6 @@ class ActionIgnore(Action):
             True
         )
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -30,14 +29,12 @@ class ActionIgnore(Action):
             "description": self.description,
         }
 
-
     @override
     def execute(self) -> ActionVerdict:
         return ActionVerdict(
             ExitCode.SUCCESS,
             "ignored"
         )
-
 
     @override
     def reverse(self) -> "ActionIgnore":

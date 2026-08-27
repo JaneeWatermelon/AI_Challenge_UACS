@@ -17,7 +17,7 @@ class ActionExists(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         super().__init__(
             "exists",
             "checks the existing of a file or directory with arguments:\n"
@@ -27,7 +27,6 @@ class ActionExists(Action):
         )
         self.fs = fs_service
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -35,7 +34,6 @@ class ActionExists(Action):
             "description": self.description,
             "arguments:": self.arguments
         }
-
 
     @override
     @safe_verdict
@@ -66,7 +64,6 @@ class ActionExists(Action):
             "",
             {"exists": path_obj.exists()}
         )
-
 
     @override
     def reverse(self) -> "ActionExists":

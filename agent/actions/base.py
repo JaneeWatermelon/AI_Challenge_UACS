@@ -34,7 +34,6 @@ class Action(ABC):
         self.description = description
         self.arguments = arguments
 
-
     @classmethod
     def register(cls, name: str):
         """
@@ -44,7 +43,6 @@ class Action(ABC):
         """
         if ActionRegister.get_action(name) is None:
             ActionRegister.add_action(name, cls)
-
 
     @classmethod
     def from_arguments(cls, arguments: Dict[str, Any]):
@@ -56,7 +54,6 @@ class Action(ABC):
         """
         return cls(arguments)
 
-
     @abstractmethod
     def to_json(self) -> Dict[str, Any]:
         """
@@ -65,7 +62,6 @@ class Action(ABC):
         """
         pass
 
-
     @abstractmethod
     def execute(self) -> ActionVerdict:
         """
@@ -73,7 +69,6 @@ class Action(ABC):
         :return:    результат действия
         """
         pass
-
 
     @abstractmethod
     def reverse(self):
@@ -84,4 +79,3 @@ class Action(ABC):
         :return:    результат обратного действия
         """
         pass
-    

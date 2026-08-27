@@ -22,7 +22,7 @@ class ActionCallCollector(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         super().__init__(
             "call_collector",
             "collects function/method calls from source files, arguments:\n"
@@ -34,7 +34,6 @@ class ActionCallCollector(Action):
         )
         self.fs = fs_service
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -42,7 +41,6 @@ class ActionCallCollector(Action):
             "description": self.description,
             "arguments": self.arguments
         }
-
 
     @staticmethod
     def _collect_from_text(filename: str, text: str, name_matcher: Optional[re.Pattern]) -> List[Record]:
@@ -63,7 +61,6 @@ class ActionCallCollector(Action):
                 records.append(Record(filename=filename, base=lineno, content=found_on_line))
 
         return records
-
 
     @override
     @safe_verdict
@@ -99,7 +96,6 @@ class ActionCallCollector(Action):
             "function calls collected",
             {"found": result}
         )
-
 
     @override
     def reverse(self) -> "ActionCallCollector":

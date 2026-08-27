@@ -26,7 +26,6 @@ class ActionLogger:
         if cls._instance is None:
             cls._instance = super(ActionLogger, cls).__new__(cls, *args, **kwargs)
         return cls._instance
-    
 
     def __init__(self):
         """
@@ -59,7 +58,7 @@ class ActionLogger:
         GET property for _actions
         """
         return self._actions
-    
+
     @actions.setter
     def actions(self, value: List[Action]) -> None:
         """
@@ -82,7 +81,7 @@ class ActionLogger:
         """
         if not isinstance(action, Action):
             raise TypeError(f"`action` must be an Action instance, got {type(action).__name__}")
-        
+
         self._actions.append(action)
 
     def push_n(self, actions: List[Action]) -> None:
@@ -109,7 +108,7 @@ class ActionLogger:
             return self._actions.pop()
         else:
             return None
-        
+
     def pop_n(self, n: int) -> List[Action]:
         """
         Pops the specified amount of actions from logger's stack.
@@ -117,12 +116,12 @@ class ActionLogger:
         Returns:
             List[Action]: List of actions.
         """
-        first_index = max(len(self.actions)-n, 0)
+        first_index = max(len(self.actions) - n, 0)
         result = self._actions[first_index:]
         self._actions = self._actions[:first_index]
 
         return result
-    
+
     def clear(self) -> None:
         """
         Clear the stack
@@ -134,7 +133,7 @@ class ActionLogger:
 
     def __str__(self):
         return f"ActionLogger(actions={self._actions})"
-    
+
     def __repr__(self):
         return {
             "count": len(self),

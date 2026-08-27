@@ -20,16 +20,13 @@ class Context:
         """
         self._verdicts = []
 
-
     @property
     def verdicts(self) -> List[ActionVerdict]:
         return self._verdicts
 
-
     @property
     def done(self) -> int:
         return len(self._verdicts)
-
 
     def mark_execution_result(self, verdict) -> None:
         """
@@ -38,7 +35,6 @@ class Context:
         :return:    ничего
         """
         self._verdicts.append(verdict)
-
 
     def clear(self) -> None:
         """

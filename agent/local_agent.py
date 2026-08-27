@@ -256,13 +256,13 @@ def get_pydantic_agent() -> Agent[LocalAgentDeps, str]:
 
     @agent.tool
     async def apply_diff(
-        ctx: RunContext[LocalAgentDeps], path: str, diff_content: str
+            ctx: RunContext[LocalAgentDeps], path: str, diff_content: str
     ) -> str:
         return await _apply_diff(path, diff_content, ctx.deps.workdir)
 
     @agent.tool
     async def append_file(
-        ctx: RunContext[LocalAgentDeps], path: str, content: str
+            ctx: RunContext[LocalAgentDeps], path: str, content: str
     ) -> str:
         return await _append_file(path, content, ctx.deps.workdir)
 

@@ -44,11 +44,9 @@ class ActionVerdict:
         self.details = details
         self.result = result
 
-
     @property
     def success(self) -> bool:
         return self.code is ExitCode.SUCCESS
-
 
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -57,7 +55,6 @@ class ActionVerdict:
             "result": self.result,
         }
 
-
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> "ActionVerdict":
         return cls(
@@ -65,7 +62,6 @@ class ActionVerdict:
             details=data.get("details", ""),
             result=data.get("result", {}),
         )
-
 
     def __bool__(self) -> bool:
         return self.success

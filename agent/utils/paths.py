@@ -26,10 +26,9 @@ class FsService:
             self._workspace_dir = Path.cwd()
         else:
             self._workspace_dir = Path(workspace_dir).resolve()
-        
+
         # Ensure workspace directory exists
         self._workspace_dir.mkdir(parents=True, exist_ok=True)
-
 
     @property
     def workspace_dir(self) -> Path:
@@ -37,7 +36,6 @@ class FsService:
         :return: the root directory of the agent's workspace.
         """
         return self._workspace_dir
-
 
     def resolve_path(self, path: Path) -> Path:
         """
@@ -54,18 +52,17 @@ class FsService:
         :raises: file or directory does not exist.
         """
         full_path = (self._workspace_dir / path).resolve()
-        
+
         # Check if path is within workspace (security check)
         try:
             full_path.relative_to(self._workspace_dir)
         except ValueError:
             raise PermissionError(f"Path outside workspace: {path}")
-        
+
         if not full_path.exists():
             raise FileNotFoundError(f"Path does not exist: {path}")
-        
-        return full_path
 
+        return full_path
 
     def is_path_allowed(self, path: Path) -> bool:
         """
@@ -81,7 +78,6 @@ class FsService:
         except (ValueError, FileNotFoundError):
             return False
 
-
     def _path_assert(self, path: Path) -> Path:
         """
         Resolve a path and verify it is allowed.
@@ -96,7 +92,6 @@ class FsService:
             raise PermissionError(f"path is not allowed in the environment: {str(path)}")
 
         return full_path
-
 
     def _dir_assert(self, path: Path) -> Path:
         """
@@ -117,7 +112,6 @@ class FsService:
 
         return full_path
 
-
     def _file_assert(self, path: Path) -> Path:
         """
         Verify that a path points to an existing, allowed **file**.
@@ -135,7 +129,6 @@ class FsService:
             raise ValueError(f"expected path to a file, given: {str(path)}")
 
         return full_path
-
 
     @staticmethod
     def validate_path(path: Path) -> tuple[bool, str, Optional[Path]]:
@@ -164,8 +157,7 @@ class FsService:
 
         return True, "ok", path
 
-
-    def mkdir(self, path: Path, parents: bool=False) -> None:
+    def mkdir(self, path: Path, parents: bool = False) -> None:
         """
         Create a directory relative to the workspace directory.
 
@@ -175,7 +167,6 @@ class FsService:
         full_path = self._path_assert(path)
 
         full_path.mkdir(parents=parents, exist_ok=True)
-
 
     def listdir(self, path: Path, max_depth: int = 1) -> List[Path]:
         """
@@ -205,11 +196,10 @@ class FsService:
         _walk(full_path, 1)
         return result
 
-
     def create_file(self,
                     path: Path,
-                    content: List[str] | None=None
-            ) -> None:
+                    content: List[str] | None = None
+                    ) -> None:
         """
         Create a new file at an allowed path.
 
@@ -230,7 +220,6 @@ class FsService:
         if content is not None:
             full_path.write_text("\n".join(content))
 
-
     def remove(self, path: Path) -> None:
         """
         Remove a file or directory.
@@ -243,7 +232,6 @@ class FsService:
             shutil.rmtree(full_path)
         else:
             full_path.unlink()
-
 
     def get_metadata(self, path: Path) -> Dict[str, Any]:
         """
@@ -276,15 +264,15 @@ class FsService:
         :return: the read lines.
         """
         full_path = self._file_assert(path)
-        
+
         with open(full_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        
+
         # Handle edge cases
         base = max(0, base)
         if base >= len(lines):
             return []
-        
+
         end = min(base + offset, len(lines))
         # Strip newline characters but preserve empty lines
         return [line.rstrip('\n') for line in lines[base:end]]
@@ -299,18 +287,17 @@ class FsService:
         :param content: lines to insert.
         """
         full_path = self._file_assert(path)
-        
+
         with open(full_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-            
-        
+
         # Handle edge cases
         base = max(0, base)
         base = min(base, len(lines))
-        
+
         # Insert content
         lines = lines[:base] + [line + '\n' for line in content] + lines[base:]
-        
+
         with open(full_path, 'w', encoding='utf-8') as f:
             f.writelines(lines)
 
@@ -322,7 +309,7 @@ class FsService:
         :param content: lines to append.
         """
         full_path = self._file_assert(path)
-        
+
         with open(full_path, 'a', encoding='utf-8') as f:
             for line in content:
                 f.write(line + '\n')
@@ -337,10 +324,10 @@ class FsService:
         :param content: lines to replace them with.
         """
         full_path = self._file_assert(path)
-        
+
         with open(full_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        
+
         # Handle edge cases
         base = max(0, base)
         if base >= len(lines):
@@ -350,6 +337,6 @@ class FsService:
             end = min(base + offset, len(lines))
             # Replace the range
             lines[base:end] = [line + '\n' for line in content]
-        
+
         with open(full_path, 'w', encoding='utf-8') as f:
             f.writelines(lines)

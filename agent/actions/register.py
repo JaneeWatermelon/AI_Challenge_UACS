@@ -15,7 +15,6 @@ class ActionRegister:
 
     _register: Dict[str, type[Action]] = {}
 
-
     @staticmethod
     def add_action(name: str, action_type: type[Action]) -> None:
         """
@@ -25,7 +24,6 @@ class ActionRegister:
         :return:            ничего
         """
         ActionRegister._register[name] = action_type
-
 
     @staticmethod
     def get_action(name: str) -> Optional[type[Action]]:

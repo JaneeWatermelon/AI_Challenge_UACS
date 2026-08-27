@@ -18,7 +18,7 @@ class ActionFileInfo(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         super().__init__(
             "file_info",
             "returns metadata about a file or directory:\n"
@@ -36,7 +36,6 @@ class ActionFileInfo(Action):
         )
         self.fs = fs_service
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -44,7 +43,6 @@ class ActionFileInfo(Action):
             "description": self.description,
             "arguments": self.arguments,
         }
-
 
     @override
     @safe_verdict
@@ -64,7 +62,6 @@ class ActionFileInfo(Action):
             "verbose statistics",
             stat
         )
-
 
     @override
     def reverse(self) -> "ActionFileInfo":

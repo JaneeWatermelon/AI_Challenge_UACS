@@ -18,7 +18,6 @@ class BotResponseParser:
     def to_json(raw_input: str) -> Dict[str, Any]:
         return json.loads(raw_input)
 
-
     @staticmethod
     def parse_required_fields(response: Dict[str, Any]) -> Dict[str, Any]:
         res = {}
@@ -27,7 +26,6 @@ class BotResponseParser:
             res[field.value] = response[field.value]
 
         return res
-
 
     @staticmethod
     def parse_actions(actions: List[Dict[str, Any]]) -> tuple[ActionVerdict, List[Action]]:

@@ -15,7 +15,7 @@ class ActionRead(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         super().__init__(
             "read",
             "reads a range of lines by base and offset, arguments:\n"
@@ -27,7 +27,6 @@ class ActionRead(Action):
         )
         self.fs = fs_service
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -35,7 +34,6 @@ class ActionRead(Action):
             "description": self.description,
             "arguments": self.arguments,
         }
-
 
     @override
     @safe_verdict
@@ -59,7 +57,6 @@ class ActionRead(Action):
             "ok",
             {"content": content}
         )
-
 
     @override
     def reverse(self) -> "ActionRead":

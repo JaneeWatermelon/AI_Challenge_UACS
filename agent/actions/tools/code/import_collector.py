@@ -326,7 +326,7 @@ class ActionCollectImports(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
         super().__init__(
             "collect_imports",
             "collects import/include/using statements from source files, arguments:\n"
@@ -337,12 +337,10 @@ class ActionCollectImports(Action):
         )
         self.fs = fs_service
 
-
     @staticmethod
     def keyword_by_file(filename: str) -> ImportKeyword | None:
         ext = Path(filename).suffix.lower()
         return IMPORT_KEYWORDS.get(ext)
-
 
     @override
     def to_json(self) -> Dict[str, Any]:
@@ -351,7 +349,6 @@ class ActionCollectImports(Action):
             "description": self.description,
             "arguments": self.arguments
         }
-
 
     @override
     @safe_verdict
@@ -388,7 +385,6 @@ class ActionCollectImports(Action):
             "Imports collected",
             {"imports": result}
         )
-
 
     @override
     def reverse(self) -> "ActionCollectImports":
