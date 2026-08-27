@@ -12,7 +12,6 @@ class FsService:
     Service providing a filesystem interface for the agent.
 
     All paths are resolved **relative to the workspace directory**
-    (TODO: ``self.environment``).
     """
 
     def __init__(self, workspace_dir: Optional[Path] = None):
@@ -78,7 +77,7 @@ class FsService:
         try:
             full_path = (self._workspace_dir / path).resolve()
             full_path.relative_to(self._workspace_dir)
-            return full_path.exists() # ??? TODO: i think its not need
+            return True
         except (ValueError, FileNotFoundError):
             return False
 
@@ -209,7 +208,7 @@ class FsService:
 
     def create_file(self,
                     path: Path,
-                    content: List[str] | None=None # TODO: it's a bit specific to pass List[str] instead of raw Str
+                    content: List[str] | None=None
             ) -> None:
         """
         Create a new file at an allowed path.
@@ -236,8 +235,6 @@ class FsService:
         """
         Remove a file or directory.
 
-        #TODO: add a recursive flag / check for directory removal.
-
         :param path: workspace-relative path to remove.
         """
         full_path = self._path_assert(path)
@@ -246,19 +243,6 @@ class FsService:
             shutil.rmtree(full_path)
         else:
             full_path.unlink()
-
-
-    def rename(self, path: Path, target: str) -> None:
-        """
-        #TODO: DEPRECATED
-        """
-        full_path = self._path_assert(path)
-        
-        # Resolve target path (relative to workspace)
-        target_path = self._workspace_dir / target
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        full_path.rename(target_path)
 
 
     def get_metadata(self, path: Path) -> Dict[str, Any]:
