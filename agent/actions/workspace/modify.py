@@ -2,15 +2,15 @@
 @file agent/actions/workspace/modify/py
 """
 
-from typing import Dict, Any, List, override
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
+from typing import Dict, Any, List, override
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
-from utils.paths import FsService
-from utils.assertion import safe_verdict
 from models.record import Record
+from utils.assertion import safe_verdict
+from utils.paths import FsService
 
 
 class ModifyOption(Enum):

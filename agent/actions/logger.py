@@ -2,8 +2,10 @@
 Contains defenition of logger to store last executed actions
 """
 
-from actions.base import Action
 from typing import List, Optional, Any
+
+from actions.base import Action
+
 
 class ActionLogger:
     """

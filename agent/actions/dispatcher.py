@@ -5,11 +5,11 @@
 from typing import List, Optional
 
 from actions.base import Action
-from actions.verdict import ActionVerdict, ExitCode
-from protocol.parser import BotResponseParser
-from protocol.format import BotRequiredFields, has_ignore_action
 from actions.context import Context
+from actions.verdict import ActionVerdict, ExitCode
+from protocol.format import BotRequiredFields, has_ignore_action
 from protocol.format import abort_reply
+from protocol.parser import BotResponseParser
 
 
 class ActionDispatcher:

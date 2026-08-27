@@ -5,8 +5,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
-from actions.verdict import ActionVerdict
 from actions.register import ActionRegister
+from actions.verdict import ActionVerdict
 
 
 class Action(ABC):

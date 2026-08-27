@@ -5,8 +5,8 @@
 import json
 
 from actions.register import ActionRegister
-from protocol.format import *
 from actions.verdict import ExitCode, ActionVerdict
+from protocol.format import *
 
 
 class BotResponseParser:

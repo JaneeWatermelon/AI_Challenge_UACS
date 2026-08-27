@@ -2,10 +2,10 @@
 @file agent/utils/paths.py
 """
 
-import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 from typing import List, Dict, Any, Optional
+
 
 class FsService:
     """

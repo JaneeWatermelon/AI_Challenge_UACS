@@ -9,10 +9,9 @@ from typing import Dict, Any, List, Optional, override
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from models.record import Record
+from utils.assertion import safe_verdict
 from utils.paths import FsService
 from utils.regex import RegexService
-from utils.assertion import safe_verdict
-
 
 _CALL_PATTERN = re.compile(
     r"(?<![\w.])(?:[A-Za-z_][A-Za-z0-9_]*\.)*([A-Za-z_][A-Za-z0-9_]*)\s*\("

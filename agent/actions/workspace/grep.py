@@ -7,9 +7,9 @@ from typing import Dict, Any, override, Pattern
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
+from utils.assertion import safe_verdict
 from utils.paths import FsService
 from utils.regex import RegexService
-from utils.assertion import safe_verdict
 
 
 class ActionGrep(Action):
