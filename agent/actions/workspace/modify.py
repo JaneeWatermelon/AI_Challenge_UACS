@@ -39,6 +39,12 @@ class ActionModify(Action):
     def __init__(self,
                  arguments: Dict[str, Any],
                  fs_service: FsService = FsService()):
+        """
+        Initialize the modify action.
+
+        :param arguments:   Dictionary containing modification parameters.
+        :param fs_service:  Filesystem service for file operations.
+        """
         super().__init__(
             "modify",
             "midify a file line(s), arguments:\n"
@@ -61,8 +67,10 @@ class ActionModify(Action):
     @property
     def mode(self) -> ModifyOption:
         """
-        :return: the requested :class:`ModifyOption`, falling back to
-            ``REPLACE`` if ``arguments["mode"]`` is missing or unrecognized.
+        Get the requested modification mode.
+
+        :return: The requested :class:`ModifyOption`, falling back to
+                 ``REPLACE`` if ``arguments["mode"]`` is missing or unrecognized.
         """
         mode_map = {
             ModifyOption.DELETE.value: ModifyOption.DELETE,
@@ -81,9 +89,9 @@ class ActionModify(Action):
         Update ``self.context`` with the given fields, keeping any
         omitted field unchanged.
 
-        :param filename: path of the file being modified.
-        :param base: line number the modification is anchored to.
-        :param content: lines saved for a later :meth:`reverse` call.
+        :param filename: Path of the file being modified.
+        :param base:     Line number the modification is anchored to.
+        :param content:  Lines saved for a later :meth:`reverse` call.
         """
         self.context = Record(
             filename=filename if filename is not None else self.context.filename,
@@ -102,6 +110,12 @@ class ActionModify(Action):
 
         The **old** lines are saved to ``self.context`` first, so the
         replacement can be undone via :meth:`_cancel_replace`.
+
+        :param path:        Path to the file.
+        :param base:        Starting line index.
+        :param offset:      Number of lines to replace.
+        :param content:     New lines to insert.
+        :return:            Success verdict.
         """
         self.update_context(
             filename=str(path),
@@ -117,6 +131,8 @@ class ActionModify(Action):
     def _cancel_replace(self) -> ActionVerdict:
         """
         Undo the last :meth:`_replace` by writing the saved old lines back.
+
+        :return:    Result of the undo operation.
         """
         return self._replace(
             Path(self.context.filename),
@@ -133,6 +149,11 @@ class ActionModify(Action):
         """
         Delete ``offset`` lines starting at ``base`` (implemented as a
         replace with an empty line, after saving the old content).
+
+        :param path:    Path to the file.
+        :param base:    Starting line index.
+        :param offset:  Number of lines to delete.
+        :return:        Success verdict.
         """
         self.update_context(
             filename=str(path),
@@ -144,6 +165,8 @@ class ActionModify(Action):
     def _cancel_delete(self) -> ActionVerdict:
         """
         Undo the last :meth:`_delete` by re-inserting the saved lines.
+
+        :return:    Result of the undo operation.
         """
         return self._insert(
             Path(self.context.filename),
@@ -160,6 +183,10 @@ class ActionModify(Action):
 
         Saves the file's line count *before* appending, so the added
         lines can be located and removed on :meth:`_cancel_append`.
+
+        :param path:    Path to the file.
+        :param content: Lines to append.
+        :return:        Success verdict.
         """
         self.update_context(
             filename=str(path),
@@ -175,6 +202,8 @@ class ActionModify(Action):
     def _cancel_append(self) -> ActionVerdict:
         """
         Undo the last :meth:`_append` by deleting the appended lines.
+
+        :return:    Result of the undo operation.
         """
         return self._delete(
             Path(self.context.filename),
@@ -190,6 +219,11 @@ class ActionModify(Action):
         """
         Insert ``content`` at line ``base``, without overwriting
         existing lines.
+
+        :param path:    Path to the file.
+        :param base:    Line index where to insert.
+        :param content: Lines to insert.
+        :return:        Success verdict.
         """
         self.update_context(
             filename=str(path),
@@ -205,6 +239,8 @@ class ActionModify(Action):
     def _cancel_insert(self) -> ActionVerdict:
         """
         Undo the last :meth:`_insert` by deleting the inserted lines.
+
+        :return:    Result of the undo operation.
         """
         return self._delete(
             Path(self.context.filename),
@@ -214,6 +250,11 @@ class ActionModify(Action):
 
     @override
     def to_json(self) -> Dict[str, Any]:
+        """
+        Serialize the action to a JSON-compatible dictionary.
+
+        :return:    Dictionary representation of the action.
+        """
         return {
             "name": self.name,
             "description": self.description,
@@ -229,9 +270,9 @@ class ActionModify(Action):
         Dispatches to :meth:`_delete`, :meth:`_append`, :meth:`_replace`,
         or :meth:`_insert` based on ``mode`` (see :attr:`mode`).
 
-        :return: an :class:`ActionVerdict` — ``MISSED_ARGUMENT`` if
-            ``filename`` or ``mode`` is absent, otherwise the result of
-            the dispatched sub-action.
+        :return: An :class:`ActionVerdict` — ``MISSED_ARGUMENT`` if
+                 ``filename`` or ``mode`` is absent, otherwise the result of
+                 the dispatched sub-action.
         """
         filename = self.arguments.get("filename", "")
         mode = self.arguments.get("mode", "")
@@ -265,6 +306,8 @@ class ActionModify(Action):
     def reverse(self) -> ActionVerdict:
         """
         Undo the last executed modification, based on the mode it ran in.
+
+        :return:    Result of the undo operation.
         """
         mode_map = {
             ModifyOption.DELETE: self._cancel_delete,

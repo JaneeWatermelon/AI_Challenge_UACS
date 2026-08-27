@@ -11,8 +11,8 @@ from actions.verdict import ActionVerdict
 
 class Action(ABC):
     """
-    Базовый класс для всех действий
-    минимальная единица выполнения агента
+    Base class for all actions.
+    Represents the minimal unit of agent execution.
     """
 
     def __init__(self,
@@ -21,12 +21,13 @@ class Action(ABC):
                  arguments: Dict[str, Any],
                  readonly: bool):
         """
-        инициализация себя
-        :param name:        имя действия (общее для всех представителей)
-        :param description: короткое описание параметров и действия
-                            (используется при генерации системного промпта)
-        :param arguments:   аргументы для выполнения
-        :param readonly:    True - если не может изменить файл, False - если может
+        Initialize the action instance.
+
+        :param name:        Unique action name (shared across all instances of this class).
+        :param description: Human-readable description of the action and its parameters.
+                            Used for system prompt generation.
+        :param arguments:   Dictionary of arguments required for execution.
+        :param readonly:    If True, the action does not modify files; if False, it may.
         """
         self.register(name)
         self.name = name
@@ -37,9 +38,13 @@ class Action(ABC):
     @classmethod
     def register(cls, name: str):
         """
-        регистрация класса для отображения по имени
-        :param name:    имя действия
-        :return:        ничего
+        Register the action class in the global registry.
+
+        This allows the action to be referenced by name later.
+        Does nothing if the action is already registered.
+
+        :param name:    Action name to register.
+        :return:        None
         """
         if ActionRegister.get_action(name) is None:
             ActionRegister.add_action(name, cls)
@@ -47,35 +52,46 @@ class Action(ABC):
     @classmethod
     def from_arguments(cls, arguments: Dict[str, Any]):
         """
-        альтернативный конструкток, который должны
-        поддерживать все действия (контракт)
-        :param arguments:   необходимые аргементы
-        :return:            объект действия
+        Alternative constructor that all actions must support.
+
+        This is a contract method for creating an action instance
+        from a dictionary of arguments.
+
+        :param arguments:   Dictionary of required arguments.
+        :return:            An instance of the action.
         """
         return cls(arguments)
 
     @abstractmethod
     def to_json(self) -> Dict[str, Any]:
         """
-        конвертация в джос
-        :return: словарь-представление
+        Serialize the action to a JSON-compatible dictionary.
+
+        Used for logging, persistence, or inter-process communication.
+
+        :return:    Dictionary representation of the action.
         """
         pass
 
     @abstractmethod
     def execute(self) -> ActionVerdict:
         """
-        непосредственно вызов команды
-        :return:    результат действия
+        Execute the action's primary logic.
+
+        This is the main method that performs the actual work.
+
+        :return:    The result of the action execution.
         """
         pass
 
     @abstractmethod
     def reverse(self):
         """
-        выполнение обратного действия
-        ридонли действия являются обратными к себе
-        применятеся для отката
-        :return:    результат обратного действия
+        Perform the reverse operation for rollback.
+
+        Read-only actions are their own reverse.
+        Used to undo changes made by this action.
+
+        :return:    The result of the reverse action.
         """
         pass

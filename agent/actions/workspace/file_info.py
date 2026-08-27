@@ -13,12 +13,21 @@ from utils.paths import FsService
 
 class ActionFileInfo(Action):
     """
-    запрос информации о файле
+    Action to retrieve metadata about a file or directory.
+
+    Provides detailed information including name, path, type,
+    size, modification time, and Unix permissions.
     """
 
     def __init__(self,
                  arguments: Dict[str, Any],
                  fs_service: FsService = FsService()):
+        """
+        Initialize the file info action.
+
+        :param arguments:   Dictionary containing the 'path' key.
+        :param fs_service:  Filesystem service for metadata retrieval.
+        """
         super().__init__(
             "file_info",
             "returns metadata about a file or directory:\n"
@@ -38,6 +47,11 @@ class ActionFileInfo(Action):
 
     @override
     def to_json(self) -> Dict[str, Any]:
+        """
+        Serialize the action to a JSON-compatible dictionary.
+
+        :return:    Dictionary representation of the action.
+        """
         return {
             "name": self.name,
             "description": self.description,
@@ -47,6 +61,14 @@ class ActionFileInfo(Action):
     @override
     @safe_verdict
     def execute(self) -> ActionVerdict:
+        """
+        Execute the file info retrieval.
+
+        Fetches metadata for the specified path and returns it
+        as a structured dictionary within the verdict.
+
+        :return:    Verdict containing the file metadata.
+        """
         path = self.arguments.get("path", "")
 
         if not path:
@@ -66,6 +88,10 @@ class ActionFileInfo(Action):
     @override
     def reverse(self) -> "ActionFileInfo":
         """
-        read only action
+        Return the reverse action.
+
+        Since this is a read-only action, it reverses to itself.
+
+        :return:    The same action instance.
         """
         return self

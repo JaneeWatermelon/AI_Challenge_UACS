@@ -12,10 +12,22 @@ from utils.paths import FsService
 
 
 class ActionRead(Action):
+    """
+    Action to read a range of lines from a file.
+
+    This is a read-only action that retrieves a specified range of lines
+    from a given file and returns them as part of the verdict.
+    """
 
     def __init__(self,
                  arguments: Dict[str, Any],
                  fs_service: FsService = FsService()):
+        """
+        Initialize the read action.
+
+        :param arguments:   Dictionary containing 'filename', 'base', and 'offset'.
+        :param fs_service:  Filesystem service for file operations.
+        """
         super().__init__(
             "read",
             "reads a range of lines by base and offset, arguments:\n"
@@ -29,6 +41,11 @@ class ActionRead(Action):
 
     @override
     def to_json(self) -> Dict[str, Any]:
+        """
+        Serialize the action to a JSON-compatible dictionary.
+
+        :return:    Dictionary representation of the action.
+        """
         return {
             "name": self.name,
             "description": self.description,
@@ -38,6 +55,14 @@ class ActionRead(Action):
     @override
     @safe_verdict
     def execute(self) -> ActionVerdict:
+        """
+        Execute the read operation.
+
+        Retrieves the specified range of lines from the file
+        and returns them as the verdict result.
+
+        :return:    Verdict containing the read lines as a list.
+        """
         path = self.arguments.get("filename", "")
 
         if not path:
@@ -61,6 +86,10 @@ class ActionRead(Action):
     @override
     def reverse(self) -> "ActionRead":
         """
-        read only action (too obviously, lol)
+        Return the reverse action.
+
+        Since this is a read-only action, it reverses to itself.
+
+        :return:    The same action instance.
         """
         return self
