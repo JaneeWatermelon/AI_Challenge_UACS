@@ -11,4 +11,4 @@ fi
 
 PROMPT="$*"
 
-exec env LOCAL_AGENT_WORKDIR="$WORKDIR" python3 "$SCRIPT_DIR/run.py" "$PROMPT"
+exec env LOCAL_AGENT_WORKDIR="$WORKDIR" python3 "$SCRIPT_DIR/local_agent.py" "$PROMPT"
