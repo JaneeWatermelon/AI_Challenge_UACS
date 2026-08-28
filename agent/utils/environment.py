@@ -36,6 +36,6 @@ class Environment:
             ValueError: If `key` type differs from :obj:`EnvKeys`.
         """
         if key in EnvKeys:
-            return os.environ.get(EnvKeys(key))
+            return os.environ.get(EnvKeys(key).value)
         else:
             raise ValueError(f"`key` argument have to be `EnvKeys` type, got {type(key).__name__}")
