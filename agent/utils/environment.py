@@ -1,6 +1,7 @@
 import os
 from enum import Enum
 
+
 class EnvKeys(Enum):
     """
     Available list of environment keys
@@ -10,11 +11,13 @@ class EnvKeys(Enum):
     OPENAI_API_KEY = "OPENAI_API_KEY"
     LOCAL_AGENT_WORKDIR = "LOCAL_AGENT_WORKDIR"
 
+
 class Environment:
     """
     Describes meta class to provide safe access to evironment variables.
     It is recommended to refer to the class, not to the instance.
     """
+
     def __new__(cls):
         """
         Singleton pattern

@@ -26,11 +26,9 @@ class RegexService:
 
         return re.compile(pattern, flags)
 
-
     @staticmethod
     def search(
             pattern: Pattern[str],
             text: str
     ) -> bool | None:
         return pattern.search(text)
-

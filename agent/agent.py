@@ -18,7 +18,7 @@ class MyInstalledAgent(BaseInstalledAgent):
 
     def _logged_setup_command(self, command: str) -> str:
         setup_log_path = (
-            PurePosixPath(EnvironmentPaths.agent_dir) / self.SETUP_LOG_FILENAME
+                PurePosixPath(EnvironmentPaths.agent_dir) / self.SETUP_LOG_FILENAME
         )
         quoted_log_path = shlex.quote(setup_log_path.as_posix())
         return (
@@ -42,7 +42,7 @@ class MyInstalledAgent(BaseInstalledAgent):
 
     @with_prompt_template
     async def run(
-        self, instruction: str, environment: BaseEnvironment, context: AgentContext
+            self, instruction: str, environment: BaseEnvironment, context: AgentContext
     ) -> None:
         output_path = PurePosixPath(EnvironmentPaths.agent_dir) / self.OUTPUT_FILENAME
         env = {}

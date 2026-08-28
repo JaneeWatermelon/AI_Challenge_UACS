@@ -10,11 +10,18 @@ from actions.verdict import ActionVerdict, ExitCode
 
 class ActionIgnore(Action):
     """
-    действие - признок конца сессии
-    игнорирует сообщение от модели
+    Action that signals the end of a session.
+
+    This action is used to explicitly ignore a model's reply,
+    indicating that no further actions should be processed.
     """
 
     def __init__(self, arguments: Dict[str, Any]):
+        """
+        Initialize the ignore action.
+
+        :param arguments:   Dictionary of arguments (unused for this action).
+        """
         super().__init__(
             "ignore",
             "ignoring a reply",
@@ -22,26 +29,39 @@ class ActionIgnore(Action):
             True
         )
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
+        """
+        Serialize the action to a JSON-compatible dictionary.
+
+        :return:    Dictionary representation of the action.
+        """
         return {
             "name": self.name,
             "description": self.description,
         }
 
-
     @override
     def execute(self) -> ActionVerdict:
+        """
+        Execute the ignore action.
+
+        Simply returns a success verdict indicating the reply was ignored.
+
+        :return:    Success verdict with "ignored" details.
+        """
         return ActionVerdict(
             ExitCode.SUCCESS,
             "ignored"
         )
 
-
     @override
     def reverse(self) -> "ActionIgnore":
         """
-        already reversed
+        Return the reverse action.
+
+        Since this is a read-only action, it reverses to itself.
+
+        :return:    The same action instance.
         """
         return self

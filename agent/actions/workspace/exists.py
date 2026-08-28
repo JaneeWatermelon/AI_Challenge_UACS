@@ -6,18 +6,27 @@ from typing import Dict, Any, override
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
-from utils.paths import FsService
 from utils.assertion import safe_verdict
+from utils.paths import FsService
 
 
 class ActionExists(Action):
     """
-    действие проверки существования файла или директории
+    Action to check whether a file or directory exists.
+
+    This is a read-only action that verifies the existence
+    of a given path within the workspace.
     """
 
     def __init__(self,
                  arguments: Dict[str, Any],
-                 fs_service: FsService=FsService()):
+                 fs_service: FsService = FsService()):
+        """
+        Initialize the exists action.
+
+        :param arguments:   Dictionary containing the 'path' key.
+        :param fs_service:  Filesystem service for path validation and checks.
+        """
         super().__init__(
             "exists",
             "checks the existing of a file or directory with arguments:\n"
@@ -27,19 +36,30 @@ class ActionExists(Action):
         )
         self.fs = fs_service
 
-
     @override
     def to_json(self) -> Dict[str, Any]:
+        """
+        Serialize the action to a JSON-compatible dictionary.
+
+        :return:    Dictionary representation of the action.
+        """
         return {
             "name": self.name,
             "description": self.description,
             "arguments:": self.arguments
         }
 
-
     @override
     @safe_verdict
     def execute(self) -> ActionVerdict:
+        """
+        Execute the existence check.
+
+        Retrieves the 'path' argument, validates it,
+        and returns a verdict indicating whether the path exists.
+
+        :return:    Verdict containing the existence result.
+        """
         path = self.arguments.get("path")
 
         if path is None:
@@ -67,10 +87,13 @@ class ActionExists(Action):
             {"exists": path_obj.exists()}
         )
 
-
     @override
     def reverse(self) -> "ActionExists":
         """
-        read only action
+        Return the reverse action.
+
+        Since this is a read-only action, it reverses to itself.
+
+        :return:    The same action instance.
         """
         return self

@@ -5,51 +5,53 @@
 from typing import List, Optional
 
 from actions.base import Action
-from actions.verdict import ActionVerdict, ExitCode
-from protocol.parser import BotResponseParser
-from protocol.format import BotRequiredFields, has_ignore_action
 from actions.context import Context
+from actions.verdict import ActionVerdict, ExitCode
+from protocol.format import BotRequiredFields, has_ignore_action
 from protocol.format import abort_reply
+from protocol.parser import BotResponseParser
 
 
 class ActionDispatcher:
     """
-    Принимает сообщения от модели,
-    парсит действия и мониторит их выполнение
-    в случае неудачи выполняет откат
+    Receives messages from the model, parses actions,
+    and monitors their execution.
+
+    In case of failure, it performs a rollback of all non-readonly actions.
     """
 
     def __init__(self):
         """
-        инициализация контекста
+        Initialize the dispatcher with an empty execution context.
         """
         self.context = Context()
 
-
     def dispatch(self, raw_input: str) -> Optional[List[ActionVerdict]]:
         """
-        выполнение команд полученных от модели
-        :param raw_input:   текстовый ответ от модели
-        :return:            Нон если ответ не требуется, список результатов по каждому действию
+        Execute commands received from the model.
+
+        :param raw_input:   Textual response from the model.
+        :return:            None if no response is required,
+                            otherwise a list of verdicts for each action.
         """
         self.context.clear()
         parse_verdict, actions = self._parse(raw_input)
 
-        # parsing step verification
+        # Parsing step verification
         if parse_verdict.code != ExitCode.SUCCESS:
-            return [parse_verdict]  # parsing issue
+            return [parse_verdict]  # Parsing issue
 
-        # explicit ignore command check
+        # Explicit ignore command check
         if has_ignore_action(actions):
-            return None # ignore flag
+            return None  # Ignore flag
 
-        # execution
+        # Execution
         for action in actions:
             verdict = action.execute()
 
-            # rollback check
+            # Rollback check
             if verdict.code != ExitCode.SUCCESS:
-                rollback_report = self._rollback(actions[:self.context.done+1])
+                rollback_report = self._rollback(actions[:self.context.done + 1])
                 return abort_reply(
                     self.context.done,
                     verdict.details,
@@ -61,15 +63,17 @@ class ActionDispatcher:
 
             self.context.mark_execution_result(verdict)
 
-        # agent reply verdicts
+        # Agent reply verdicts
         return self.context.verdicts
-
 
     def _parse(self, raw_input: str) -> tuple[ActionVerdict, List[Action]]:
         """
-        получает команды от модели из текста
-        :param raw_input:   текстовый ответ от модели
-        :return:            вердикт по парсингу и список действий на выполнение
+        Parse actions from the model's response text.
+
+        :param raw_input:   Textual response from the model.
+        :return:            A tuple containing:
+                            - parsing verdict
+                            - list of actions to execute
         """
         json_response = BotResponseParser.to_json(raw_input)
         parsed = BotResponseParser.parse_required_fields(json_response)
@@ -82,7 +86,7 @@ class ActionDispatcher:
                 f"required field '{BotRequiredFields.ACTIONS.value}' missed"
             ), []
 
-        # field instance check (see format.py)
+        # Field instance check (see format.py)
         if not isinstance(actions_field, list):
             return ActionVerdict(
                 ExitCode.PROTOCOL_ERROR,
@@ -91,12 +95,13 @@ class ActionDispatcher:
 
         return BotResponseParser.parse_actions(actions_field)
 
-
     def _rollback(self, actions: List[Action]) -> List[ActionVerdict]:
         """
-        откатывает все не ридонли действия
-        :param actions: очередь на выполнение, где произошли траблы
-        :return:        отчет по откату каждого действия
+        Roll back all non-readonly actions in reverse order.
+
+        :param actions: The queue of actions that were executed
+                        (or attempted) before the failure.
+        :return:        A report containing the verdict of each rollback operation.
         """
         return [
             action.reverse() for action in actions
