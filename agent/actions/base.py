@@ -3,7 +3,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List, Optional, Tuple
 
 from actions.verdict import ActionVerdict
 
@@ -17,6 +17,15 @@ class ActionRegister:
     """
 
     _register: Dict[str, type['Action']] = {}
+
+    @staticmethod
+    def get_all_actions() -> List[Tuple[str, type['Action']]]:
+        """
+        Get all registered actions as a list of (name, class) tuples.
+
+        :return:    List of all registered actions.
+        """
+        return list(ActionRegister._register.items())
 
     @staticmethod
     def add_action(name: str, action_type: type['Action']) -> None:
