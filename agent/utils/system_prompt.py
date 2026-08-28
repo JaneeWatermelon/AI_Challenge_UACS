@@ -4,9 +4,8 @@
 
 from typing import List, Tuple
 
-from agent.actions.base import Action
-from agent.actions.register import ActionRegister
-from agent.protocol.format import Format
+from actions.base import Action, ActionRegister
+from protocol.format import Format
 
 
 class SystemPromptGenerator:
