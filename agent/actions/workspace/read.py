@@ -9,15 +9,17 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.paths import FsService
 from utils.assertion import safe_verdict
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("read")
 class ActionRead(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
                  fs_service: FsService=FsService()):
         super().__init__(
-            "read",
+            ActionRead.__registered_name,
             "reads a range of lines by base and offset, arguments:\n"
             "filename - name of a file to read\n"
             "base - start index of a range to read from\n"

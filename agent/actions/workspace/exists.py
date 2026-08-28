@@ -8,8 +8,10 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.paths import FsService
 from utils.assertion import safe_verdict
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("exists")
 class ActionExists(Action):
     """
     действие проверки существования файла или директории
@@ -19,7 +21,7 @@ class ActionExists(Action):
                  arguments: Dict[str, Any],
                  fs_service: FsService=FsService()):
         super().__init__(
-            "exists",
+            ActionExists._registered_name,
             "checks the existing of a file or directory with arguments:\n"
             "path - relative path to the file or directory",
             arguments,

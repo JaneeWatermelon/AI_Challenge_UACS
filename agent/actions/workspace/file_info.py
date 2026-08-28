@@ -9,8 +9,10 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.paths import FsService
 from utils.assertion import safe_verdict
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("file_info")
 class ActionFileInfo(Action):
     """
     запрос информации о файле
@@ -20,7 +22,7 @@ class ActionFileInfo(Action):
                  arguments: Dict[str, Any],
                  fs_service: FsService=FsService()):
         super().__init__(
-            "file_info",
+            ActionFileInfo._registered_name,
             "returns metadata about a file or directory:\n"
             "- name: file/dir name\n"
             "- path: absolute path\n"

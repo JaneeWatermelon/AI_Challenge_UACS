@@ -6,8 +6,10 @@ from typing import Dict, Any, override
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("ignore")
 class ActionIgnore(Action):
     """
     действие - признок конца сессии
@@ -16,7 +18,7 @@ class ActionIgnore(Action):
 
     def __init__(self, arguments: Dict[str, Any]):
         super().__init__(
-            "ignore",
+            ActionIgnore._registered_name,
             "ignoring a reply",
             arguments,
             True

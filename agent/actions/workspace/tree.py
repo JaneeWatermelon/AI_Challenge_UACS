@@ -9,18 +9,20 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.paths import FsService
 from utils.assertion import safe_verdict
+from actions.register import ActionRegister
 
 
 DEFAULT_DEPTH = 1
 
 
+@ActionRegister.register("tree")
 class ActionTree(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
                  fs_service: FsService=FsService()):
         super().__init__(
-            "tree",
+            ActionTree._registered_name,
             "returns a directory tree structure, arguments:\n"
             "path - path to directory to walk (default: workspace root)\n"
             f"max_depth - maximum recursion depth (default: {DEFAULT_DEPTH})\n"

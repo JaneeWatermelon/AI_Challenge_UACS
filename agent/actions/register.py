@@ -16,10 +16,25 @@ class ActionRegister:
     _register: Dict[str, type[Action]] = {}
 
     @staticmethod
+    def register(name: Optional[str] = None):
+        """
+        register action class
+        :param name: registry key, uses class name if not provided
+        """
+
+        def decorator(cls):
+            key = name or cls.__name__
+            # name for using in action init
+            cls._registered_name = key
+            ActionRegister._register[key] = cls
+            return cls
+
+        return decorator
+
+    @staticmethod
     def get_all_actions() -> List[Tuple[str, type[Action]]]:
         """
         Get all registered actions as a list of (name, class) tuples.
-
         :return:    List of all registered actions.
         """
         return list(ActionRegister._register.items())

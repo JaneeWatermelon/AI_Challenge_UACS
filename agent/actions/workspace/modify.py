@@ -11,6 +11,7 @@ from actions.verdict import ActionVerdict, ExitCode
 from utils.paths import FsService
 from utils.assertion import safe_verdict
 from models.record import Record
+from actions.register import ActionRegister
 
 
 class ModifyOption(Enum):
@@ -27,6 +28,7 @@ class ModifyOption(Enum):
         return self.value
 
 
+@ActionRegister.register("modify")
 class ActionModify(Action):
     """
     Action that modifies a file's line(s) — replace, delete, append, or insert.
@@ -40,7 +42,7 @@ class ActionModify(Action):
                  arguments: Dict[str, Any],
                  fs_service: FsService = FsService()):
         super().__init__(
-            "modify",
+            ActionModify._registered_name,
             "midify a file line(s), arguments:\n"
             "filename - name of a file to modify\n"
             "base - index of line to insert a new lines\n"

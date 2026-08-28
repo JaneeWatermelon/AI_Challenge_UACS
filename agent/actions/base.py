@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any
 
 from actions.verdict import ActionVerdict
-from actions.register import ActionRegister
 
 
 class Action(ABC):
@@ -28,22 +27,10 @@ class Action(ABC):
         :param arguments:   аргументы для выполнения
         :param readonly:    True - если не может изменить файл, False - если может
         """
-        self.register(name)
         self.name = name
         self.readonly = readonly
         self.description = description
         self.arguments = arguments
-
-
-    @classmethod
-    def register(cls, name: str):
-        """
-        регистрация класса для отображения по имени
-        :param name:    имя действия
-        :return:        ничего
-        """
-        if ActionRegister.get_action(name) is None:
-            ActionRegister.add_action(name, cls)
 
 
     @classmethod
