@@ -1,6 +1,7 @@
 from typing import List
 from actions.dispatcher import ActionDispatcher
 from actions.verdict import ActionVerdict
+import time
 
 from llm_client import LLMClient
 
@@ -11,9 +12,10 @@ class WarerAgent:
     #         cls.instance = super(WarerAgent, cls).__new__(cls)
     #     return cls.instance
 
-    def __init__(self, system_prompt: str = ""):
+    def __init__(self, system_prompt: str = "", rate_limit: int = None):
         self.llm = LLMClient(system_prompt)
         self.dispatcher = ActionDispatcher()
+        self.rate_limit = min(max(0, rate_limit), 100)
 
     def run(self, prompt: str):
         raw_response = self.llm.ask(prompt)
@@ -24,7 +26,10 @@ class WarerAgent:
                 # stop
                 return
             else:
-                raw_response = self.llm.ask(prompt)
+                if not self.rate_limit is None:
+                    time.sleep(self.rate_limit)
+
+                raw_response = self.llm.ask(verdicts)
                 verdicts = self.dispatcher.dispatch(raw_response)
                 helper(verdicts, count + 1)
             # TODO: Rollback Logger ?

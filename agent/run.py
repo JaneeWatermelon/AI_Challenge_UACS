@@ -11,7 +11,7 @@ def main() -> None:
     prompt = " ".join(args.prompt)
     print(prompt)
 
-    agent = WarerAgent()
+    agent = WarerAgent(rate_limit=6)
     agent.run(prompt)
 
 

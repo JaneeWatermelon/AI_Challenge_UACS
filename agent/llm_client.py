@@ -37,9 +37,13 @@ class LLMClient:
             }
         )
 
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=messages,
-        )
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                max_tokens=10000
+            )
 
-        return response.choices[0].message.content or ""
+            return response.choices[0].message.content or ""
+        except Exception as e:
+            print(f"OpenAI error: {e}")
