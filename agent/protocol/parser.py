@@ -4,7 +4,7 @@
 
 import json
 
-from actions.register import ActionRegister
+from actions.base import ActionRegister
 from protocol.format import *
 from actions.verdict import ExitCode, ActionVerdict
 
