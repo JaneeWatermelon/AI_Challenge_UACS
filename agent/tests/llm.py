@@ -16,5 +16,3 @@ try:
     print(response.choices[0].message.content)
 except Exception as e:
     print(f"OpenAI error: {e}")
-
-    # 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
