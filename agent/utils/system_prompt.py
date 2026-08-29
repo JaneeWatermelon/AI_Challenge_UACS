@@ -4,7 +4,8 @@
 
 from typing import List, Tuple
 
-from actions.base import Action, ActionRegister
+from actions.base import Action
+from actions.register import ActionRegister
 from protocol.format import Format
 
 
