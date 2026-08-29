@@ -41,7 +41,7 @@ class LLMClient:
         )
 
         try:
-            logger.info("LLMClient starting query to LLM")
+            logger.info(f"LLMClient starting query to LLM: {messages}")
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
