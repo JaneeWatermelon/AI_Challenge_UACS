@@ -34,7 +34,6 @@ class BotResponseParser:
 
         for action in actions:
             name = action[ActionFields.ACTION.value]
-            arguments = action[ActionFields.ARGUMENTS.value]
             action_type = ActionRegister.get_action(name)
 
             if action_type is None:
@@ -42,6 +41,11 @@ class BotResponseParser:
                     ExitCode.PROTOCOL_ERROR,
                     f"unknown action {name}"
                 ), []
+
+            if action_type is ActionIgnore:
+                arguments = {}
+            else:
+                arguments = action[ActionFields.ARGUMENTS.value]
 
             action = action_type.from_arguments(arguments)
             agent_todo.append(action)
