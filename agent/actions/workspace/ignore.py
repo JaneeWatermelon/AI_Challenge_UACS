@@ -6,8 +6,10 @@ from typing import Dict, Any, override
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("ignore")
 class ActionIgnore(Action):
     """
     Action that signals the end of a session.
@@ -23,7 +25,7 @@ class ActionIgnore(Action):
         :param arguments:   Dictionary of arguments (unused for this action).
         """
         super().__init__(
-            "ignore",
+            ActionIgnore._registered_name,
             "ignoring a reply",
             arguments,
             True

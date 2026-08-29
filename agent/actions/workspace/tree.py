@@ -8,11 +8,13 @@ from typing import Dict, Any, override
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.assertion import safe_verdict
-from utils.paths import FsService
+from actions.register import ActionRegister
+
 
 DEFAULT_DEPTH = 1
 
 
+@ActionRegister.register("tree")
 class ActionTree(Action):
     """
     Action to retrieve a directory tree structure.
@@ -32,7 +34,7 @@ class ActionTree(Action):
         :param fs_service:  Filesystem service for directory traversal.
         """
         super().__init__(
-            "tree",
+            ActionTree._registered_name,
             "returns a directory tree structure, arguments:\n"
             "path - path to directory to walk (default: workspace root)\n"
             f"max_depth - maximum recursion depth (default: {DEFAULT_DEPTH})\n"

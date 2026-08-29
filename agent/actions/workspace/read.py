@@ -9,8 +9,10 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.assertion import safe_verdict
 from utils.paths import FsService
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("read")
 class ActionRead(Action):
     """
     Action to read a range of lines from a file.
@@ -29,7 +31,7 @@ class ActionRead(Action):
         :param fs_service:  Filesystem service for file operations.
         """
         super().__init__(
-            "read",
+            ActionRead.__registered_name,
             "reads a range of lines by base and offset, arguments:\n"
             "filename - name of a file to read\n"
             "base - start index of a range to read from\n"

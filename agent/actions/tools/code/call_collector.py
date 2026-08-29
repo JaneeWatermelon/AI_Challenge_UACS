@@ -12,19 +12,23 @@ from models.record import Record
 from utils.assertion import safe_verdict
 from utils.paths import FsService
 from utils.regex import RegexService
+from utils.assertion import safe_verdict
+from actions.register import ActionRegister
+
 
 _CALL_PATTERN = re.compile(
     r"(?<![\w.])(?:[A-Za-z_][A-Za-z0-9_]*\.)*([A-Za-z_][A-Za-z0-9_]*)\s*\("
 )
 
 
+@ActionRegister.register("call_collector")
 class ActionCallCollector(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
                  fs_service: FsService = FsService()):
         super().__init__(
-            "call_collector",
+            ActionCallCollector._registered_name,
             "collects function/method calls from source files, arguments:\n"
             "files - list of file paths to analyze (required)\n"
             "name - optional: specific function name to find (default: all)\n"

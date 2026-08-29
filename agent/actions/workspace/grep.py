@@ -10,8 +10,11 @@ from actions.verdict import ActionVerdict, ExitCode
 from utils.assertion import safe_verdict
 from utils.paths import FsService
 from utils.regex import RegexService
+from utils.assertion import safe_verdict
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("grep")
 class ActionGrep(Action):
     """
     Action to search for a pattern within files.
@@ -32,7 +35,7 @@ class ActionGrep(Action):
         :param regex_service:   Regex service for pattern compilation and matching.
         """
         super().__init__(
-            "grep",
+            ActionGrep._registered_name,
             "searches for a pattern in files, arguments:\n"
             "pattern - text or regex to search for (required)\n"
             "path - file or directory to search (default: workspace root)\n"

@@ -10,6 +10,7 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.assertion import safe_verdict
 from utils.paths import FsService
+from actions.register import ActionRegister
 
 
 class ImportKeyword(Enum):
@@ -322,13 +323,14 @@ PARSERS = {
 }
 
 
+@ActionRegister.register("collect_imports")
 class ActionCollectImports(Action):
 
     def __init__(self,
                  arguments: Dict[str, Any],
                  fs_service: FsService = FsService()):
         super().__init__(
-            "collect_imports",
+            ActionCollectImports._registered_name,
             "collects import/include/using statements from source files, arguments:\n"
             "files - list of file paths to analyze (required)\n"
             "returns: mapping file_path -> list of import/include/using statements found",

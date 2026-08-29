@@ -8,8 +8,10 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.assertion import safe_verdict
 from utils.paths import FsService
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("exists")
 class ActionExists(Action):
     """
     Action to check whether a file or directory exists.
@@ -28,7 +30,7 @@ class ActionExists(Action):
         :param fs_service:  Filesystem service for path validation and checks.
         """
         super().__init__(
-            "exists",
+            ActionExists._registered_name,
             "checks the existing of a file or directory with arguments:\n"
             "path - relative path to the file or directory",
             arguments,

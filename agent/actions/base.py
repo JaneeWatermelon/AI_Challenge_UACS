@@ -68,25 +68,10 @@ class Action(ABC):
         :param arguments:   Dictionary of arguments required for execution.
         :param readonly:    If True, the action does not modify files; if False, it may.
         """
-        self.register(name)
         self.name = name
         self.readonly = readonly
         self.description = description
         self.arguments = arguments
-
-    @classmethod
-    def register(cls, name: str):
-        """
-        Register the action class in the global registry.
-
-        This allows the action to be referenced by name later.
-        Does nothing if the action is already registered.
-
-        :param name:    Action name to register.
-        :return:        None
-        """
-        if ActionRegister.get_action(name) is None:
-            ActionRegister.add_action(name, cls)
 
     @classmethod
     def from_arguments(cls, arguments: Dict[str, Any]):

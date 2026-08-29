@@ -14,6 +14,8 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.assertion import safe_verdict
 from utils.paths import FsService
+from actions.register import ActionRegister
+
 
 DEFAULT_TIMEOUT = 5
 
@@ -138,6 +140,7 @@ _WINDOWS_ONLY: Dict[str, Optional[Validator]] = {
 _OS_SPECIFIC = {"Linux": _LINUX_ONLY, "Darwin": _MACOS_ONLY, "Windows": _WINDOWS_ONLY}
 
 
+@ActionRegister.register("exec")
 class ActionExec(Action):
 
     def __init__(self,
@@ -146,7 +149,7 @@ class ActionExec(Action):
         allowed = self._allowed_commands()
         summary = ", ".join(sorted(set(allowed) | _PATH_READING_COMMANDS))
         super().__init__(
-            "exec",
+            ActionExec._registered_name,
             "reads global system/security diagnostics and logs via a fixed set of "
             "read-only utilities (OS-dependent). Never reads or touches anything "
             "inside the project workspace - use fs actions for that. Arguments:\n"

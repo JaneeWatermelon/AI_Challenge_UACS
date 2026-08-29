@@ -9,8 +9,10 @@ from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from utils.assertion import safe_verdict
 from utils.paths import FsService
+from actions.register import ActionRegister
 
 
+@ActionRegister.register("file_info")
 class ActionFileInfo(Action):
     """
     Action to retrieve metadata about a file or directory.
@@ -29,7 +31,7 @@ class ActionFileInfo(Action):
         :param fs_service:  Filesystem service for metadata retrieval.
         """
         super().__init__(
-            "file_info",
+            ActionFileInfo._registered_name,
             "returns metadata about a file or directory:\n"
             "- name: file/dir name\n"
             "- path: absolute path\n"
