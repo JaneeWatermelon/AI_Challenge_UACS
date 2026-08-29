@@ -53,5 +53,5 @@ class LLMClient:
 
             return result or ""
         except Exception as e:
-            logger.exception(f"LLMClient exception: {result}")
+            logger.exception(f"LLMClient exception: {e}")
             print(f"OpenAI error: {e}")

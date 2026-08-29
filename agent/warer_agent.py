@@ -29,7 +29,8 @@ class WarerAgent:
                 if not self.rate_limit is None:
                     time.sleep(self.rate_limit)
 
-                raw_response = self.llm.ask(verdicts)
+                serialized_verdicts = list(map(lambda x: x.to_json(), verdicts))
+                raw_response = self.llm.ask(serialized_verdicts)
                 verdicts = self.dispatcher.dispatch(raw_response)
                 helper(verdicts, count + 1)
             # TODO: Rollback Logger ?
