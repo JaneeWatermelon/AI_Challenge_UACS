@@ -7,6 +7,7 @@ from typing import Dict, Any, override
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
+from agent.utils.paths import FsService
 from utils.assertion import safe_verdict
 from actions.register import ActionRegister
 
