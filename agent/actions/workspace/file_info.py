@@ -47,6 +47,20 @@ class ActionFileInfo(Action):
         )
         self.fs = fs_service
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Path to a file or directory relative to workspace root",
+                },
+            },
+            "required": ["path"],
+            "additionalProperties": False,
+        }
+
     @override
     def to_json(self) -> Dict[str, Any]:
         """

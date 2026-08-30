@@ -1,3 +1,4 @@
+import json
 from typing import List
 from actions.dispatcher import ActionDispatcher
 from actions.verdict import ActionVerdict
@@ -5,6 +6,7 @@ import time
 
 from llm_client import LLMClient
 from utils.logger import get_logger
+from actions.tools.adapter import ToolCallAdapter
 
 logger = get_logger(__name__)
 
@@ -29,9 +31,18 @@ class WarerAgent:
         return response
 
     def run(self, prompt: str):
-        raw_response = self.llm.ask(prompt)
-        response = self._clear_response(raw_response)
-        verdicts = self.dispatcher.dispatch(response)
+        message = self.llm.ask(prompt)
+
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                name = tool_call.function.name
+                arguments = json.loads(tool_call.function.arguments)
+
+                raw_input = ToolCallAdapter.to_dispatcher_input(name, arguments)
+        else:
+            raw_input = message.content
+
+        verdicts = self.dispatcher.dispatch(raw_input)
         
         def helper(verdicts: List[ActionVerdict], count: int = 1):
             if verdicts is None or count >= 255:
@@ -42,9 +53,18 @@ class WarerAgent:
                     time.sleep(self.rate_limit)
 
                 serialized_verdicts = list(map(lambda x: x.to_json(), verdicts))
-                raw_response = self.llm.ask(serialized_verdicts)
-                response = self._clear_response(raw_response)
-                verdicts = self.dispatcher.dispatch(response)
+                message = self.llm.ask(serialized_verdicts)
+                
+                if message.tool_calls:
+                    for tool_call in message.tool_calls:
+                        name = tool_call.function.name
+                        arguments = json.loads(tool_call.function.arguments)
+        
+                        raw_input = ToolCallAdapter.to_dispatcher_input(name, arguments)
+                else:
+                    raw_input = message.content
+        
+                verdicts = self.dispatcher.dispatch(raw_input)
                 helper(verdicts, count + 1)
             # TODO: Rollback Logger ?
 

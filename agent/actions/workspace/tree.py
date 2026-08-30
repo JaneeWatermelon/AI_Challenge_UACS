@@ -7,7 +7,7 @@ from typing import Dict, Any, override
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
-from agent.utils.paths import FsService
+from utils.paths import FsService
 from utils.assertion import safe_verdict
 from actions.register import ActionRegister
 
@@ -45,6 +45,26 @@ class ActionTree(Action):
             True
         )
         self.fs = fs_service
+
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Path to directory. Defaults to workspace root.",
+                },
+                "max_depth": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Maximum recursion depth",
+                    "default": 1,
+                },
+            },
+            "required": [],
+            "additionalProperties": False,
+        }
 
     @property
     def workspace_dir(self) -> Path:

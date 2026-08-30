@@ -38,6 +38,20 @@ class ActionExists(Action):
         )
         self.fs = fs_service
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Relative path to a file or directory",
+                },
+            },
+            "required": ["path"],
+            "additionalProperties": False,
+        }
+
     @override
     def to_json(self) -> Dict[str, Any]:
         """

@@ -31,7 +31,7 @@ class ActionRead(Action):
         :param fs_service:  Filesystem service for file operations.
         """
         super().__init__(
-            ActionRead.__registered_name,
+            ActionRead._registered_name,
             "reads a range of lines by base and offset, arguments:\n"
             "filename - name of a file to read\n"
             "base - start index of a range to read from\n"
@@ -40,6 +40,28 @@ class ActionRead(Action):
             True
         )
         self.fs = fs_service
+
+    @classmethod
+    def parameters_schema(cls) -> Dict:
+        return {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "description": "Name of the file to read",
+                },
+                "base": {
+                    "type": "integer",
+                    "description": "Start line index",
+                },
+                "offset": {
+                    "type": "integer",
+                    "description": "Number of lines to read",
+                },
+            },
+            "required": ["filename", "base", "offset"],
+            "additionalProperties": False,
+        }
 
     @override
     def to_json(self) -> Dict[str, Any]:

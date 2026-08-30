@@ -66,6 +66,49 @@ class ActionModify(Action):
         self.fs = fs_service
         self.context = Record(filename="", base=-1, content=[])
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "description": "Path to the file to modify",
+                },
+                "base": {
+                    "type": "integer",
+                    "description": "Zero-based line index for insert, replace or delete",
+                },
+                "offset": {
+                    "type": "integer",
+                    "description": "Number of lines to replace or delete",
+                    "minimum": 1,
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "replace",
+                        "append",
+                        "delete",
+                        "insert",
+                    ],
+                    "description": "Modification mode",
+                },
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                    },
+                    "description": "Lines to insert, append or replace",
+                },
+            },
+            "required": [
+                "filename",
+                "mode",
+            ],
+            "additionalProperties": False,
+        }
+
     @property
     def mode(self) -> ModifyOption:
         """
