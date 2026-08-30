@@ -1,10 +1,12 @@
+import json
+import time
 from typing import List
 from actions.dispatcher import ActionDispatcher
 from actions.verdict import ActionVerdict
-import time
 
-from llm_client import LLMClient
+from utils.json import recursive_serializer
 from utils.logger import get_logger
+from llm_client import LLMClient
 
 logger = get_logger(__name__)
 
@@ -41,7 +43,8 @@ class WarerAgent:
                 if not self.rate_limit is None:
                     time.sleep(self.rate_limit)
 
-                serialized_verdicts = list(map(lambda x: x.to_json(), verdicts))
+                # serialized_verdicts = list(map(lambda x: x.to_json(), verdicts))
+                serialized_verdicts = json.dumps(verdicts, default=recursive_serializer)
                 raw_response = self.llm.ask(serialized_verdicts)
                 response = self._clear_response(raw_response)
                 verdicts = self.dispatcher.dispatch(response)
