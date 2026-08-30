@@ -91,7 +91,7 @@ class ActionTree(Action):
         )
 
     @override
-    def reverse(self) -> "ActionTree":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -99,4 +99,4 @@ class ActionTree(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

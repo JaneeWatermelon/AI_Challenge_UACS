@@ -389,8 +389,8 @@ class ActionCollectImports(Action):
         )
 
     @override
-    def reverse(self) -> "ActionCollectImports":
+    def reverse(self) -> ActionVerdict:
         """
         read only action
         """
-        return self
+        return self.execute()

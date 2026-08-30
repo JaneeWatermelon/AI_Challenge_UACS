@@ -88,7 +88,7 @@ class ActionFileInfo(Action):
         )
 
     @override
-    def reverse(self) -> "ActionFileInfo":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -96,4 +96,4 @@ class ActionFileInfo(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()
