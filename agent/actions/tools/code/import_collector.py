@@ -389,6 +389,7 @@ class ActionCollectImports(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionCollectImports":
         """
         read only action

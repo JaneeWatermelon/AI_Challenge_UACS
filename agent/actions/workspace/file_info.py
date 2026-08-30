@@ -88,6 +88,7 @@ class ActionFileInfo(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionFileInfo":
         """
         Return the reverse action.

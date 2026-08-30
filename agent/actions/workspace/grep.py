@@ -178,6 +178,7 @@ class ActionGrep(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionGrep":
         """
         Return the reverse action.

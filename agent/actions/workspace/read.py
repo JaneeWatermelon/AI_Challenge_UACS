@@ -86,6 +86,7 @@ class ActionRead(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionRead":
         """
         Return the reverse action.

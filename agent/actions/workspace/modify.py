@@ -305,6 +305,7 @@ class ActionModify(Action):
             return self._insert(full_path, base, content)
 
     @override
+    @safe_verdict
     def reverse(self) -> ActionVerdict:
         """
         Undo the last executed modification, based on the mode it ran in.

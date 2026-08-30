@@ -91,6 +91,7 @@ class ActionTree(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionTree":
         """
         Return the reverse action.

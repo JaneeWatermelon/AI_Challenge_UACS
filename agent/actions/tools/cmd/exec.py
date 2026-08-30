@@ -274,6 +274,7 @@ class ActionExec(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionExec":
         """
         read only action (see `self.__init__`)

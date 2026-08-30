@@ -90,6 +90,7 @@ class ActionExists(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionExists":
         """
         Return the reverse action.

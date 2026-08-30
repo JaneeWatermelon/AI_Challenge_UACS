@@ -7,6 +7,7 @@ from typing import Dict, Any, override
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
 from actions.register import ActionRegister
+from utils.assertion import safe_verdict
 
 
 @ActionRegister.register("ignore")
@@ -58,6 +59,7 @@ class ActionIgnore(Action):
         )
 
     @override
+    @safe_verdict
     def reverse(self) -> "ActionIgnore":
         """
         Return the reverse action.
