@@ -20,7 +20,9 @@ class LLMClient:
             "You are a non-interactive coding agent. "
             "Complete the user's request autonomously. "
             "Use tools to inspect files, run commands, and apply focused diffs. "
-            "Work in concise steps and explain what you changed in the final response."
+            "Work in concise steps. "
+            "Return the response only in JSON format WITHOUT any highlighter like ```json etc. Only raw JSON. "
+            "You have to start from '{' and end by '}'"
         ) + SystemPromptGenerator.build()
 
     def ask(self, prompt: str) -> str:
