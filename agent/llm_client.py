@@ -47,13 +47,26 @@ class LLMClient:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
-                max_tokens=10000
+                max_tokens=10000,
             )
 
-            result = response.choices[0].message.content
-            logger.info(f"LLMClient got response from LLM: {result}")
+            content = response.choices[0].message.content
+            reasoning = response.choices[0].message.reasoning
 
-            return result or ""
+            logger.info(f"LLMClient got response from LLM: {response}")
+            logger.info(f"LLMClient got response.choices[0] from LLM: {response.choices[0]}")
+            logger.info(f"LLMClient got response.choices[0].message from LLM: {response.choices[0].message}")
+            logger.info(f"LLMClient got response.choices[0].message.content from LLM: {response.choices[0].message.content}")
+            logger.info(f"LLMClient got response.choices[0].message.reasoning from LLM: {response.choices[0].message.reasoning}")
+
+            result = content
+
+            if content is None:
+                if reasoning is None:
+                    raise ValueError("LLMClient response is None")
+                result = reasoning
+            
+            return result
         except Exception as e:
             logger.exception(f"LLMClient exception: {e}")
             print(f"OpenAI error: {e}")
