@@ -88,7 +88,7 @@ class ActionCallCollector(Action):
         for raw_path in files:
             path = Path(raw_path)
 
-            self.fs._path_assert(path)
+            self.fs.is_path_allowed(path)
 
             full_path = self.fs.resolve_path(path)
             text = full_path.read_text(encoding="utf-8", errors="replace")

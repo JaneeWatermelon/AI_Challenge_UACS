@@ -5,7 +5,10 @@
 import shutil
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+from utils.environment import Environment, EnvKeys
+from utils.logger import get_logger
 
+logger = get_logger(__name__)
 
 class FsService:
     """
@@ -23,7 +26,7 @@ class FsService:
                           If None, uses current working directory.
         """
         if workspace_dir is None:
-            self._workspace_dir = Path.cwd()
+            self._workspace_dir = Path(Environment.get(EnvKeys.LOCAL_AGENT_WORKDIR)).resolve() or Path.cwd()
         else:
             self._workspace_dir = Path(workspace_dir).resolve()
 
@@ -52,15 +55,18 @@ class FsService:
         :raises: file or directory does not exist.
         """
         full_path = (self._workspace_dir / path).resolve()
+        logger.info(f"self._workspace_dir: {self._workspace_dir}")
+        logger.info(f"path: {path}")
+        logger.info(f"self._workspace_dir / path: {self._workspace_dir / path}")
+        logger.info(f"full_path: {full_path}")
 
         # Check if path is within workspace (security check)
         try:
             full_path.relative_to(self._workspace_dir)
         except ValueError:
-            raise PermissionError(f"Path outside workspace: {path}")
-
-        if not full_path.exists():
-            raise FileNotFoundError(f"Path does not exist: {path}")
+            message = f"Path outside workspace: {path} | Workspace: {self._workspace_dir} | full_path: {full_path}"
+            logger.exception(f"resolve_path: {message}")
+            raise PermissionError(message)
 
         return full_path
 
@@ -72,26 +78,14 @@ class FsService:
         :return: ``True`` if it exists, ``False`` otherwise.
         """
         try:
-            full_path = (self._workspace_dir / path).resolve()
-            full_path.relative_to(self._workspace_dir)
+            full_path = self.resolve_path(path)
+
+            if not full_path.exists():
+                raise FileNotFoundError(f"Path does not exist: {path}")
             return True
-        except (ValueError, FileNotFoundError):
+        except (ValueError, PermissionError, FileNotFoundError) as e:
+            logger.warning(f"is_path_allowed: {e}")
             return False
-
-    def _path_assert(self, path: Path) -> Path:
-        """
-        Resolve a path and verify it is allowed.
-
-        :param path: relative path.
-        :return Path: resolved path, if allowed.
-        :raises PermissionError: if the path is not allowed in the environment.
-        """
-        full_path = self.resolve_path(path)
-
-        if not self.is_path_allowed(full_path):
-            raise PermissionError(f"path is not allowed in the environment: {str(path)}")
-
-        return full_path
 
     def _dir_assert(self, path: Path) -> Path:
         """
@@ -102,10 +96,10 @@ class FsService:
         :raises FileNotFoundError: if the directory does not exist.
         :raises NotADirectoryError: if the path is not a directory.
         """
-        full_path = self._path_assert(path)
+        full_path = self.is_path_allowed(path)
 
-        if not full_path.exists():
-            raise FileNotFoundError(f"directory not found: {str(path)}")
+        # if not full_path.exists():
+        #     raise FileNotFoundError(f"directory not found: {str(path)}")
 
         if not full_path.is_dir():
             raise NotADirectoryError(f"expected path to a directory, given: {str(path)}")
@@ -120,10 +114,10 @@ class FsService:
         :raises FileNotFoundError: if the file does not exist.
         :raises ValueError: if the path is not a file.
         """
-        full_path = self._path_assert(path)
+        full_path = self.is_path_allowed(path)
 
-        if not full_path.exists():
-            raise FileNotFoundError(f"file not found: {str(path)}")
+        # if not full_path.exists():
+        #     raise FileNotFoundError(f"file not found: {str(path)}")
 
         if not full_path.is_file():
             raise ValueError(f"expected path to a file, given: {str(path)}")
@@ -156,17 +150,6 @@ class FsService:
             return False, "absolute navigation is forbidden", None
 
         return True, "ok", path
-
-    def mkdir(self, path: Path, parents: bool = False) -> None:
-        """
-        Create a directory relative to the workspace directory.
-
-        :param path: path to the new directory.
-        :param parents: equivalent to ``mkdir -p``.
-        """
-        full_path = self._path_assert(path)
-
-        full_path.mkdir(parents=parents, exist_ok=True)
 
     def listdir(self, path: Path, max_depth: int = 1) -> List[Path]:
         """
@@ -207,7 +190,7 @@ class FsService:
         :param content: optional initial content for the new file.
         :raises RuntimeError: if the file already exists.
         """
-        full_path = self._path_assert(path)
+        full_path = self.resolve_path(path)
 
         if full_path.exists():
             raise RuntimeError(f"file already exists: {str(path)}")
@@ -227,7 +210,7 @@ class FsService:
         :param path: workspace-root-relative path.
         :raises RuntimeError: if the directory already exists.
         """
-        full_path = self._path_assert(path)
+        full_path = self.resolve_path(path)
 
         if full_path.exists():
             raise RuntimeError(f"directory already exists: {str(path)}")
@@ -240,7 +223,7 @@ class FsService:
 
         :param path: workspace-relative path to remove.
         """
-        full_path = self._path_assert(path)
+        full_path = self.is_path_allowed(path)
 
         if full_path.is_dir():
             shutil.rmtree(full_path)
@@ -255,7 +238,7 @@ class FsService:
         :return: a metadata mapping (``name``, ``path``, ``is_file``,
             ``is_dir``, ``size``, ``modified``, ``permissions``).
         """
-        full_path = self._path_assert(path)
+        full_path = self.is_path_allowed(path)
         stat = full_path.stat()
 
         return {
