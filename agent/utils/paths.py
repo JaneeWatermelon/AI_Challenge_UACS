@@ -220,6 +220,20 @@ class FsService:
         if content is not None:
             full_path.write_text("\n".join(content))
 
+    def create_directory(self, path: Path) -> None:
+        """
+        Create a new directory at an allowed path.
+
+        :param path: workspace-root-relative path.
+        :raises RuntimeError: if the directory already exists.
+        """
+        full_path = self._path_assert(path)
+
+        if full_path.exists():
+            raise RuntimeError(f"directory already exists: {str(path)}")
+
+        full_path.mkdir(parents=True, exist_ok=False)
+
     def remove(self, path: Path) -> None:
         """
         Remove a file or directory.
