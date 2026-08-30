@@ -31,7 +31,7 @@ class ActionRead(Action):
         :param fs_service:  Filesystem service for file operations.
         """
         super().__init__(
-            ActionRead.__registered_name,
+            ActionRead._registered_name,
             "reads a range of lines by base and offset, arguments:\n"
             "filename - name of a file to read\n"
             "base - start index of a range to read from\n"
