@@ -48,12 +48,12 @@ class ActionCreate(Action):
                 "missed required argument 'paths'"
             )
 
-        for path in paths:
+        for path in paths: 
             if path.endswith("/"):
-                self.fs.create_directory(Path(path))
+                self.fs.create_directory(Path(path.lstrip("/")))
             else:
                 # creates an empty file
-                self.fs.create_file(Path(path), [""])
+                self.fs.create_file(Path(path.lstrip("/")), [""])
 
             self.creation_cache.append(path)
 

@@ -79,7 +79,7 @@ class ActionFileInfo(Action):
                 "missed 'path' argument"
             )
 
-        stat = self.fs.get_metadata(Path(path))
+        stat = self.fs.get_metadata(Path(path.lstrip("/")))
 
         return ActionVerdict(
             ExitCode.SUCCESS,

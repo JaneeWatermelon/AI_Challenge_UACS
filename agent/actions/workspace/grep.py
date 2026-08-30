@@ -155,7 +155,7 @@ class ActionGrep(Action):
         recursive = self.arguments.get("recursive", False)
         max_results = self.arguments.get("max_results", 100)
 
-        files = self._get_files(path, recursive)
+        files = self._get_files(path.lstrip("/"), recursive)
 
         result = []
 

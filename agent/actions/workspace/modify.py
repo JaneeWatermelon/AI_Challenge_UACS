@@ -285,7 +285,9 @@ class ActionModify(Action):
                 "missed 'filename' or 'mode' argument"
             )
 
-        full_path = self.fs.resolve_path(Path(filename))
+        full_path = self.fs.resolve_path(Path(filename.lstrip('/')))
+        
+        # TODO: Проверка на существование через self.fs.is_path_allowed
 
         mode = self.mode
         base = self.arguments.get("base")
