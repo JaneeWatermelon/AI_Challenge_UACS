@@ -28,7 +28,7 @@ class ActionCreate(Action):
             False
         )
         self.fs = fs_service
-        self.creation_cache: Path | None = None
+        self.last_created: Path | None = None
 
     @override
     def to_json(self) -> Dict[str, Any]:
@@ -40,7 +40,7 @@ class ActionCreate(Action):
     @override
     @safe_verdict
     def execute(self) -> ActionVerdict:
-        self.creation_cache = Path()
+        self.last_created = Path()
 
         path = self.arguments.get("path")
         content = self.arguments.get("content", [])
@@ -58,25 +58,25 @@ class ActionCreate(Action):
             # creates an empty file
             self.fs.create_file(path_obj, content)
 
-        self.creation_cache = path_obj
+        self.last_created = path_obj
 
         return ActionVerdict(
             ExitCode.SUCCESS,
             "file / directory created successfully",
             {
-                "created": self.creation_cache
+                "created": self.last_created
             }
         )
 
     @override
     @safe_verdict
     def reverse(self) -> ActionVerdict:
-        self.fs.remove(self.creation_cache)
+        self.fs.remove(self.last_created)
 
         return ActionVerdict(
             ExitCode.SUCCESS,
             "created file / directory removed successfully",
             {
-                "removed": self.creation_cache
+                "removed": self.last_created
             }
         )
