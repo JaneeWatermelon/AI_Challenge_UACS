@@ -12,6 +12,8 @@ from utils.assertion import safe_verdict
 from utils.paths import FsService
 
 
+#TODO: add 'content' argument
+
 @ActionRegister.register("create")
 class ActionCreate(Action):
 
