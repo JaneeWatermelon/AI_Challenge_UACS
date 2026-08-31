@@ -77,12 +77,6 @@ class ActionExists(Action):
                 reason
             )
 
-        if not self.fs.is_path_allowed(path_obj):
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                f"given path is not allowed: {str(path)}"
-            )
-
         return ActionVerdict(
             ExitCode.SUCCESS,
             "",
