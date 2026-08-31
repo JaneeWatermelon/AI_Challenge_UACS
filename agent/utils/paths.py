@@ -97,10 +97,7 @@ class FsService:
         :raises FileNotFoundError: if the directory does not exist.
         :raises NotADirectoryError: if the path is not a directory.
         """
-        full_path = self.is_path_allowed(path)
-
-        # if not full_path.exists():
-        #     raise FileNotFoundError(f"directory not found: {str(path)}")
+        full_path = self.resolve_path(path)
 
         if not full_path.is_dir():
             raise NotADirectoryError(f"expected path to a directory, given: {str(path)}")
@@ -115,10 +112,7 @@ class FsService:
         :raises FileNotFoundError: if the file does not exist.
         :raises ValueError: if the path is not a file.
         """
-        full_path = self.is_path_allowed(path)
-
-        # if not full_path.exists():
-        #     raise FileNotFoundError(f"file not found: {str(path)}")
+        full_path = self.resolve_path(path)
 
         if not full_path.is_file():
             raise ValueError(f"expected path to a file, given: {str(path)}")
