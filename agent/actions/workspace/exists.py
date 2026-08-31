@@ -3,6 +3,7 @@
 """
 
 from typing import Dict, Any, override
+from pathlib import Path
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
@@ -70,17 +71,10 @@ class ActionExists(Action):
                 f"see the description:\n{self.description}"
             )
 
-        is_valid, reason, path_obj = self.fs.validate_path(path)
-        if not is_valid:
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                reason
-            )
-
         return ActionVerdict(
             ExitCode.SUCCESS,
-            "",
-            {"exists": path_obj.exists()}
+            "checked successfully",
+            {"exists": self.fs.exists(Path(path))}
         )
 
     @override
