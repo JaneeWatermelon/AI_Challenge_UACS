@@ -286,12 +286,8 @@ class ActionModify(Action):
             )
 
         path = Path(filename.lstrip('/'))
-        if self.fs.is_path_allowed(path):
-            return ActionVerdict(
-                ExitCode.PERMISSION_DENIED,
-                f"file '{path}' is outside workspace or does not exist"
-            )
 
+        # if path is not workspace-relative then it raise PermissionDenied
         full_path = self.fs.resolve_path(path)
 
         mode = self.mode
