@@ -78,8 +78,7 @@ class ActionExists(Action):
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionExists":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -87,4 +86,4 @@ class ActionExists(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

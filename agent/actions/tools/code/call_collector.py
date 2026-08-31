@@ -100,9 +100,8 @@ class ActionCallCollector(Action):
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionCallCollector":
+    def reverse(self) -> ActionVerdict:
         """
         read only action
         """
-        return self
+        return self.execute()

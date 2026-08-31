@@ -59,8 +59,7 @@ class ActionIgnore(Action):
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionIgnore":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -68,4 +67,4 @@ class ActionIgnore(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()
