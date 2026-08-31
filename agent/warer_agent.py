@@ -43,9 +43,9 @@ class WarerAgent:
                 if not self.rate_limit is None:
                     time.sleep(self.rate_limit)
 
-                # serialized_verdicts = list(map(lambda x: x.to_json(), verdicts))
-                serialized_verdicts = json.dumps(verdicts, default=recursive_serializer)
-                raw_response = self.llm.ask(serialized_verdicts)
+                serialized_verdicts = list(map(lambda x: x.to_json(), verdicts))
+                # serialized_verdicts = json.dumps(verdicts, default=recursive_serializer)
+                raw_response = self.llm.ask(str(serialized_verdicts))
                 response = self._clear_response(raw_response)
                 verdicts = self.dispatcher.dispatch(response)
                 helper(verdicts, count + 1)

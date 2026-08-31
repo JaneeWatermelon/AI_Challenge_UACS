@@ -27,7 +27,11 @@ class FsService:
                           Absolute path
         """
         if workspace_dir is None:
-            self._workspace_dir = Path(Environment.get(EnvKeys.LOCAL_AGENT_WORKDIR)).resolve() or Path.cwd()
+            workdir = Environment.get(EnvKeys.LOCAL_AGENT_WORKDIR)
+            if not workdir is None:
+                self._workspace_dir = Path(workdir).resolve()
+            else:
+                self._workspace_dir = Path.cwd()
         else:
             self._workspace_dir = Path(workspace_dir).resolve()
 
