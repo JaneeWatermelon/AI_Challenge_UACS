@@ -120,32 +120,32 @@ class FsService:
 
         return full_path
 
-    @staticmethod
-    def validate_path(path: Path) -> tuple[bool, str, Optional[Path]]:
-        """
-        Environment-independent sanity check for a relative path.
-
-        Checks length, validity, existence, and that the path is
-        **not** absolute — absolute navigation is forbidden.
-
-        :param path: relative path.
-        :return: a tuple of ``(is_valid, message, path_or_none)``.
-        """
-        if len(str(path)) > 4096:
-            return False, "too long path", None
-
-        try:
-            path_obj = Path(path)
-        except ValueError as e:
-            return False, f"invalid path: {str(e)}", None
-
-        if not path.exists():
-            return False, "file or directory is not exists", None
-
-        if path_obj.is_absolute():
-            return False, "absolute navigation is forbidden", None
-
-        return True, "ok", path
+    # @staticmethod
+    # def validate_path(path: Path) -> tuple[bool, str, Optional[Path]]:
+    #     """
+    #     Environment-independent sanity check for a relative path.
+    #
+    #     Checks length, validity, existence, and that the path is
+    #     **not** absolute — absolute navigation is forbidden.
+    #
+    #     :param path: relative path.
+    #     :return: a tuple of ``(is_valid, message, path_or_none)``.
+    #     """
+    #     if len(str(path)) > 4096:
+    #         return False, "too long path", None
+    #
+    #     try:
+    #         path_obj = Path(path)
+    #     except ValueError as e:
+    #         return False, f"invalid path: {str(e)}", None
+    #
+    #     if not path.exists():
+    #         return False, "file or directory is not exists", None
+    #
+    #     if path_obj.is_absolute():
+    #         return False, "absolute navigation is forbidden", None
+    #
+    #     return True, "ok", path
 
     def listdir(self, path: Path, max_depth: int = 1) -> List[Path]:
         """
