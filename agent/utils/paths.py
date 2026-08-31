@@ -24,6 +24,7 @@ class FsService:
         Args:
             workspace_dir: root directory of the agent's workspace.
                           If None, uses current working directory.
+                          Absolute path
         """
         if workspace_dir is None:
             self._workspace_dir = Path(Environment.get(EnvKeys.LOCAL_AGENT_WORKDIR)).resolve() or Path.cwd()
@@ -52,7 +53,7 @@ class FsService:
 
         :param path: workspace-root-relative path.
         :return: resolved absolute path.
-        :raises: file or directory does not exist.
+        :raises: path outside workspace.
         """
         full_path = (self._workspace_dir / path).resolve()
         logger.info(f"self._workspace_dir: {self._workspace_dir}")

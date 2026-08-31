@@ -285,9 +285,14 @@ class ActionModify(Action):
                 "missed 'filename' or 'mode' argument"
             )
 
-        full_path = self.fs.resolve_path(Path(filename.lstrip('/')))
-        
-        # TODO: Проверка на существование через self.fs.is_path_allowed
+        path = Path(filename.lstrip('/'))
+        if self.fs.is_path_allowed(path):
+            return ActionVerdict(
+                ExitCode.PERMISSION_DENIED,
+                f"file '{path}' is outside workspace or does not exist"
+            )
+
+        full_path = self.fs.resolve_path(path)
 
         mode = self.mode
         base = self.arguments.get("base")
