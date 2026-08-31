@@ -46,6 +46,26 @@ class ActionTree(Action):
         )
         self.fs = fs_service
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Path to directory. Defaults to workspace root.",
+                },
+                "max_depth": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Maximum recursion depth",
+                    "default": 1,
+                },
+            },
+            "required": [],
+            "additionalProperties": False,
+        }
+
     @property
     def workspace_dir(self) -> Path:
         """
@@ -91,8 +111,7 @@ class ActionTree(Action):
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionTree":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -100,4 +119,4 @@ class ActionTree(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

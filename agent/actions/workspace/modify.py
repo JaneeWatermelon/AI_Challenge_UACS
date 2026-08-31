@@ -66,6 +66,49 @@ class ActionModify(Action):
         self.fs = fs_service
         self.context = Record(filename="", base=-1, content=[])
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "description": "Path to the file to modify",
+                },
+                "base": {
+                    "type": "integer",
+                    "description": "Zero-based line index for insert, replace or delete",
+                },
+                "offset": {
+                    "type": "integer",
+                    "description": "Number of lines to replace or delete",
+                    "minimum": 1,
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "replace",
+                        "append",
+                        "delete",
+                        "insert",
+                    ],
+                    "description": "Modification mode",
+                },
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                    },
+                    "description": "Lines to insert, append or replace",
+                },
+            },
+            "required": [
+                "filename",
+                "mode",
+            ],
+            "additionalProperties": False,
+        }
+
     @property
     def mode(self) -> ModifyOption:
         """
@@ -285,9 +328,10 @@ class ActionModify(Action):
                 "missed 'filename' or 'mode' argument"
             )
 
-        full_path = self.fs.resolve_path(Path(filename.lstrip('/')))
-        
-        # TODO: Проверка на существование через self.fs.is_path_allowed
+        path = Path(filename.lstrip('/'))
+
+        # if path is not workspace-relative then it raise PermissionDenied
+        full_path = self.fs.resolve_path(path)
 
         mode = self.mode
         base = self.arguments.get("base")

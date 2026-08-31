@@ -1,10 +1,12 @@
 import os
 
 from openai import OpenAI
+from openai.types.chat.chat_completion_message import ChatCompletionMessage
 
 from utils.logger import get_logger
 from utils.environment import EnvKeys, Environment
 from utils.system_prompt import SystemPromptGenerator
+from actions.tools.tools import build_tools
 
 logger = get_logger(__name__)
 
@@ -19,13 +21,16 @@ class LLMClient:
         self.system_prompt = system_prompt or (
             "You are a non-interactive coding agent. "
             "Complete the user's request autonomously. "
-            "Use tools to inspect files, run commands, and apply focused diffs. "
-            "Work in concise steps. "
-            "Return the response only in JSON format WITHOUT any highlighter like ```json etc. Only raw JSON. "
-            "You have to start from '{' and end by '}'"
-        ) + SystemPromptGenerator.build()
+            "Use the available tools to inspect and modify the workspace. "
+            "Choose tools based on their descriptions and parameter schemas. "
+            "Do not claim that an action was performed unless the corresponding tool succeeded. "
+            "If you got plain text, you have to do some tool calls that you think should be executed"
+            "If you got JSON of verdicts - this is how your choosed tools were executed."
+            "Depends on results in them you need to do some new executions or end work"
+            "For ending work you need to execute 'ignore' tool"
+        )
 
-    def ask(self, prompt: str) -> str:
+    def ask(self, prompt: str) -> ChatCompletionMessage:
         messages = []
 
         if self.system_prompt:
@@ -43,30 +48,22 @@ class LLMClient:
         )
 
         try:
+            logger.info(f"build_tools():\n{build_tools()}")
             logger.info(f"LLMClient starting query to LLM: {messages}")
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 max_tokens=10000,
+                tools=build_tools(),
+                tool_choice='auto'
             )
 
-            content = response.choices[0].message.content
-            reasoning = response.choices[0].message.reasoning
+            message = response.choices[0].message
 
             logger.info(f"LLMClient got response from LLM: {response}")
             logger.info(f"LLMClient got response.choices[0] from LLM: {response.choices[0]}")
-            logger.info(f"LLMClient got response.choices[0].message from LLM: {response.choices[0].message}")
-            logger.info(f"LLMClient got response.choices[0].message.content from LLM: {response.choices[0].message.content}")
-            logger.info(f"LLMClient got response.choices[0].message.reasoning from LLM: {response.choices[0].message.reasoning}")
-
-            result = content
-
-            if content is None:
-                if reasoning is None:
-                    raise ValueError("LLMClient response is None")
-                result = reasoning
+            logger.info(f"LLMClient got response.choices[0].message from LLM: {message}")
             
-            return result
+            return message
         except Exception as e:
             logger.exception(f"LLMClient exception: {e}")
-            print(f"OpenAI error: {e}")

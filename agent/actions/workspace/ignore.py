@@ -32,6 +32,15 @@ class ActionIgnore(Action):
             True
         )
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False,
+        }
+
     @override
     def to_json(self) -> Dict[str, Any]:
         """
@@ -59,8 +68,7 @@ class ActionIgnore(Action):
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionIgnore":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -68,4 +76,4 @@ class ActionIgnore(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

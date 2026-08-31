@@ -24,9 +24,14 @@ class FsService:
         Args:
             workspace_dir: root directory of the agent's workspace.
                           If None, uses current working directory.
+                          Absolute path
         """
         if workspace_dir is None:
-            self._workspace_dir = Path(Environment.get(EnvKeys.LOCAL_AGENT_WORKDIR)).resolve() or Path.cwd()
+            workdir = Environment.get(EnvKeys.LOCAL_AGENT_WORKDIR)
+            if not workdir is None:
+                self._workspace_dir = Path(workdir).resolve()
+            else:
+                self._workspace_dir = Path.cwd()
         else:
             self._workspace_dir = Path(workspace_dir).resolve()
 
@@ -52,7 +57,7 @@ class FsService:
 
         :param path: workspace-root-relative path.
         :return: resolved absolute path.
-        :raises: file or directory does not exist.
+        :raises: path outside workspace.
         """
         full_path = (self._workspace_dir / path).resolve()
         logger.info(f"self._workspace_dir: {self._workspace_dir}")
@@ -70,36 +75,16 @@ class FsService:
 
         return full_path
 
-    def is_path_allowed(self, path: Path) -> bool:
-        """
-        Check whether a path exists relative to the workspace directory.
-
-        :param path: workspace-relative path.
-        :return: ``True`` if it exists, ``False`` otherwise.
-        """
-        try:
-            full_path = self.resolve_path(path)
-
-            if not full_path.exists():
-                raise FileNotFoundError(f"Path does not exist: {path}")
-            return True
-        except (ValueError, PermissionError, FileNotFoundError) as e:
-            logger.warning(f"is_path_allowed: {e}")
-            return False
-
     def _dir_assert(self, path: Path) -> Path:
         """
         Verify that a path points to an existing, allowed **directory**.
 
-        :param path: relative path to a directory.
+        :param path: workspace-relative path to a directory.
         :return Path: resolved dir path, if allowed.
         :raises FileNotFoundError: if the directory does not exist.
         :raises NotADirectoryError: if the path is not a directory.
         """
-        full_path = self.is_path_allowed(path)
-
-        # if not full_path.exists():
-        #     raise FileNotFoundError(f"directory not found: {str(path)}")
+        full_path = self.resolve_path(path)
 
         if not full_path.is_dir():
             raise NotADirectoryError(f"expected path to a directory, given: {str(path)}")
@@ -110,52 +95,32 @@ class FsService:
         """
         Verify that a path points to an existing, allowed **file**.
 
-        :param path: relative path to a file.
+        :param path: workspace-relative path to a file.
         :raises FileNotFoundError: if the file does not exist.
         :raises ValueError: if the path is not a file.
         """
-        full_path = self.is_path_allowed(path)
-
-        # if not full_path.exists():
-        #     raise FileNotFoundError(f"file not found: {str(path)}")
+        full_path = self.resolve_path(path)
 
         if not full_path.is_file():
             raise ValueError(f"expected path to a file, given: {str(path)}")
 
         return full_path
 
-    @staticmethod
-    def validate_path(path: Path) -> tuple[bool, str, Optional[Path]]:
+    def exists(self, path: Path) -> bool:
         """
-        Environment-independent sanity check for a relative path.
-
-        Checks length, validity, existence, and that the path is
-        **not** absolute — absolute navigation is forbidden.
-
-        :param path: relative path.
-        :return: a tuple of ``(is_valid, message, path_or_none)``.
+        file or directory existing check
+        :param path: workspace-relative path
+        :return: ``True`` if path exists ``False`` otherwise
         """
-        if len(str(path)) > 4096:
-            return False, "too long path", None
+        full_path = self.resolve_path(path)
 
-        try:
-            path_obj = Path(path)
-        except ValueError as e:
-            return False, f"invalid path: {str(e)}", None
-
-        if not path.exists():
-            return False, "file or directory is not exists", None
-
-        if path_obj.is_absolute():
-            return False, "absolute navigation is forbidden", None
-
-        return True, "ok", path
+        return full_path.exists(follow_symlinks=False)
 
     def listdir(self, path: Path, max_depth: int = 1) -> List[Path]:
         """
         Scan a directory for its entries, up to a maximum depth.
 
-        :param path: allowed directory path.
+        :param path: workspace-relative directory path.
         :param max_depth: maximum depth of entries to include.
         :return: list of discovered entries.
         """
@@ -186,7 +151,7 @@ class FsService:
         """
         Create a new file at an allowed path.
 
-        :param path: workspace-root-relative path.
+        :param path: workspace-relative path.
         :param content: optional initial content for the new file.
         :raises RuntimeError: if the file already exists.
         """
@@ -207,7 +172,7 @@ class FsService:
         """
         Create a new directory at an allowed path.
 
-        :param path: workspace-root-relative path.
+        :param path: workspace-relative path.
         :raises RuntimeError: if the directory already exists.
         """
         full_path = self.resolve_path(path)
@@ -223,7 +188,7 @@ class FsService:
 
         :param path: workspace-relative path to remove.
         """
-        full_path = self.is_path_allowed(path)
+        full_path = self.resolve_path(path)
 
         if full_path.is_dir():
             shutil.rmtree(full_path)
@@ -234,11 +199,11 @@ class FsService:
         """
         Read general metadata for a file or directory.
 
-        :param path: allowed file or directory path.
+        :param path: workspace-relative file or directory path.
         :return: a metadata mapping (``name``, ``path``, ``is_file``,
             ``is_dir``, ``size``, ``modified``, ``permissions``).
         """
-        full_path = self.is_path_allowed(path)
+        full_path = self.resolve_path(path)
         stat = full_path.stat()
 
         return {
@@ -255,7 +220,7 @@ class FsService:
         """
         Read ``offset`` lines starting from ``base``.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param base: 0-based line number to start reading from.
         :param offset: number of lines to read.
         :return: the read lines.
@@ -279,7 +244,7 @@ class FsService:
         Insert content at the specified line, **without** overwriting
         existing lines.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param base: 0-based line number to insert at.
         :param content: lines to insert.
         """
@@ -302,7 +267,7 @@ class FsService:
         """
         Append content to the end of the file.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param content: lines to append.
         """
         full_path = self._file_assert(path)
@@ -315,7 +280,7 @@ class FsService:
         """
         Replace ``offset`` lines starting from ``base`` with ``content``.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param base: 0-based line number to start replacing from.
         :param offset: number of lines to replace.
         :param content: lines to replace them with.

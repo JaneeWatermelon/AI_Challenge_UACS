@@ -3,6 +3,7 @@
 """
 
 from typing import Dict, Any, override
+from pathlib import Path
 
 from actions.base import Action
 from actions.verdict import ActionVerdict, ExitCode
@@ -38,6 +39,20 @@ class ActionExists(Action):
         )
         self.fs = fs_service
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Relative path to a file or directory",
+                },
+            },
+            "required": ["path"],
+            "additionalProperties": False,
+        }
+
     @override
     def to_json(self) -> Dict[str, Any]:
         """
@@ -70,28 +85,14 @@ class ActionExists(Action):
                 f"see the description:\n{self.description}"
             )
 
-        is_valid, reason, path_obj = self.fs.validate_path(path)
-        if not is_valid:
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                reason
-            )
-
-        if not self.fs.is_path_allowed(path_obj):
-            return ActionVerdict(
-                ExitCode.INVALID_ARGUMENT,
-                f"given path is not allowed: {str(path)}"
-            )
-
         return ActionVerdict(
             ExitCode.SUCCESS,
-            "",
-            {"exists": path_obj.exists()}
+            "checked successfully",
+            {"exists": self.fs.exists(Path(path))}
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionExists":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -99,4 +100,4 @@ class ActionExists(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

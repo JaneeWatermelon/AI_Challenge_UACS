@@ -45,6 +45,14 @@ class Action(ABC):
         """
         return cls(arguments)
 
+    @classmethod
+    @abstractmethod
+    def parameters_schema(cls) -> dict:
+        """
+        JSON Schema of action arguments.
+        """
+        pass
+
     @abstractmethod
     def to_json(self) -> Dict[str, Any]:
         """
@@ -68,7 +76,7 @@ class Action(ABC):
         pass
 
     @abstractmethod
-    def reverse(self):
+    def reverse(self) -> ActionVerdict:
         """
         Perform the reverse operation for rollback.
 

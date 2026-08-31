@@ -51,6 +51,51 @@ class ActionGrep(Action):
         self.fs = fs_service
         self.regex = regex_service
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "pattern": {
+                    "type": "string",
+                    "description": "Text or regular expression to search for",
+                },
+                "path": {
+                    "type": "string",
+                    "description": "File or directory to search. Defaults to workspace root.",
+                    "default": ".",
+                },
+                "recursive": {
+                    "type": "boolean",
+                    "description": "Include subdirectories",
+                    "default": False,
+                },
+                "regex": {
+                    "type": "boolean",
+                    "description": "Treat pattern as a regular expression",
+                    "default": False,
+                },
+                "case_sensitive": {
+                    "type": "boolean",
+                    "description": "Perform case-sensitive search",
+                    "default": False,
+                },
+                "whole_word": {
+                    "type": "boolean",
+                    "description": "Match whole words only",
+                    "default": False,
+                },
+                "max_results": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Maximum number of matches to return",
+                    "default": 100,
+                },
+            },
+            "required": ["pattern"],
+            "additionalProperties": False,
+        }
+
     @override
     def to_json(self) -> Dict[str, Any]:
         """
@@ -178,8 +223,7 @@ class ActionGrep(Action):
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionGrep":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -187,4 +231,4 @@ class ActionGrep(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

@@ -12,6 +12,8 @@ from utils.assertion import safe_verdict
 from utils.paths import FsService
 
 
+#TODO: add 'content' argument
+
 @ActionRegister.register("create")
 class ActionCreate(Action):
 
@@ -20,14 +22,45 @@ class ActionCreate(Action):
                  fs_service=FsService()):
         super().__init__(
             ActionCreate._registered_name,
-            "create files or directories, arguments:\n"
-            "paths - list of paths to create (required)\n"
+            "create file or directory, arguments:\n"
+            "path - workspace-relative path to create (required)\n"
+            "content - list of lines to write (default is empty)\n"
             "if path ends with '/', it's treated as a directory",
             arguments,
             False
         )
         self.fs = fs_service
-        self.creation_cache = []
+        self.last_created: Path | None = None
+
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": (
+                        "Workspace-relative path to create. "
+                        "If the path ends with '/', create a directory; "
+                        "otherwise create a file."
+                    ),
+                },
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                    },
+                    "description": (
+                        "Lines to write to the created file. "
+                        "Defaults to an empty list."
+                    ),
+                    "default": [],
+                },
+            },
+            "required": ["path"],
+            "additionalProperties": False,
+        }
+
 
     @override
     def to_json(self) -> Dict[str, Any]:
@@ -39,45 +72,43 @@ class ActionCreate(Action):
     @override
     @safe_verdict
     def execute(self) -> ActionVerdict:
-        self.creation_cache = []
-        paths = self.arguments.get("paths")
+        self.last_created = Path()
 
-        if paths is None:
+        path: str = self.arguments.get("path")
+        content = self.arguments.get("content", [])
+
+        if path is None:
             return ActionVerdict(
                 ExitCode.MISSED_ARGUMENT,
-                "missed required argument 'paths'"
+                "missed required argument 'path'"
             )
 
-        for path in paths: 
-            if path.endswith("/"):
-                self.fs.create_directory(Path(path.lstrip("/")))
-            else:
-                # creates an empty file
-                self.fs.create_file(Path(path.lstrip("/")), [""])
+        path_obj = Path(path.lstrip("/"))
+        if str(path).endswith("/"):
+            self.fs.create_directory(path_obj)
+        else:
+            # creates an empty file
+            self.fs.create_file(path_obj, content)
 
-            self.creation_cache.append(path)
+        self.last_created = path_obj
 
         return ActionVerdict(
             ExitCode.SUCCESS,
-            "files/directories created successfully",
+            "file / directory created successfully",
             {
-                "created": self.creation_cache
+                "created": self.last_created
             }
         )
 
     @override
     @safe_verdict
     def reverse(self) -> ActionVerdict:
-        removed = []
-
-        for path in self.creation_cache:
-            self.fs.remove(Path(path))
+        self.fs.remove(self.last_created)
 
         return ActionVerdict(
             ExitCode.SUCCESS,
-            "all created files/directories removed successfully",
+            "created file / directory removed successfully",
             {
-                "removed": removed
+                "removed": self.last_created
             }
         )
-

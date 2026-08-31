@@ -41,6 +41,28 @@ class ActionRead(Action):
         )
         self.fs = fs_service
 
+    @classmethod
+    def parameters_schema(cls) -> Dict:
+        return {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string",
+                    "description": "Name of the file to read",
+                },
+                "base": {
+                    "type": "integer",
+                    "description": "Start line index",
+                },
+                "offset": {
+                    "type": "integer",
+                    "description": "Number of lines to read",
+                },
+            },
+            "required": ["filename", "base", "offset"],
+            "additionalProperties": False,
+        }
+
     @override
     def to_json(self) -> Dict[str, Any]:
         """
@@ -86,8 +108,7 @@ class ActionRead(Action):
         )
 
     @override
-    @safe_verdict
-    def reverse(self) -> "ActionRead":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -95,4 +116,4 @@ class ActionRead(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()
