@@ -71,12 +71,11 @@ class SystemPromptGenerator:
         """
         return (
             "You will receive messages in two formats. If you receive plain text, "
-            "treat it as an instruction and respond with a JSON object containing "
-            "the actions you want to execute. If you receive a JSON object with "
-            "a 'results' field, it contains the results of your previous actions. "
+            "treat it as an instruction and execute tools which you want to. "
+            "If you receive a JSON object with a 'results' field,"
+            "it contains the results of your previous actions. "
             "If the results shows success, continue with the next actions or send "
             "an ignore action to finish. If the results shows an error, either "
             "retry with corrected arguments or send ignore. If you receive an "
             "unknown format or are unsure what to do, always respond with ignore. "
-            "Never include any text outside the JSON response."
         )
