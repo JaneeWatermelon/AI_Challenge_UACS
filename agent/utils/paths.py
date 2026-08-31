@@ -75,7 +75,7 @@ class FsService:
         """
         Verify that a path points to an existing, allowed **directory**.
 
-        :param path: relative path to a directory.
+        :param path: workspace-relative path to a directory.
         :return Path: resolved dir path, if allowed.
         :raises FileNotFoundError: if the directory does not exist.
         :raises NotADirectoryError: if the path is not a directory.
@@ -91,7 +91,7 @@ class FsService:
         """
         Verify that a path points to an existing, allowed **file**.
 
-        :param path: relative path to a file.
+        :param path: workspace-relative path to a file.
         :raises FileNotFoundError: if the file does not exist.
         :raises ValueError: if the path is not a file.
         """
@@ -106,7 +106,7 @@ class FsService:
         """
         Scan a directory for its entries, up to a maximum depth.
 
-        :param path: allowed directory path.
+        :param path: workspace-relative directory path.
         :param max_depth: maximum depth of entries to include.
         :return: list of discovered entries.
         """
@@ -137,7 +137,7 @@ class FsService:
         """
         Create a new file at an allowed path.
 
-        :param path: workspace-root-relative path.
+        :param path: workspace-relative path.
         :param content: optional initial content for the new file.
         :raises RuntimeError: if the file already exists.
         """
@@ -158,7 +158,7 @@ class FsService:
         """
         Create a new directory at an allowed path.
 
-        :param path: workspace-root-relative path.
+        :param path: workspace-relative path.
         :raises RuntimeError: if the directory already exists.
         """
         full_path = self.resolve_path(path)
@@ -185,7 +185,7 @@ class FsService:
         """
         Read general metadata for a file or directory.
 
-        :param path: allowed file or directory path.
+        :param path: workspace-relative file or directory path.
         :return: a metadata mapping (``name``, ``path``, ``is_file``,
             ``is_dir``, ``size``, ``modified``, ``permissions``).
         """
@@ -206,7 +206,7 @@ class FsService:
         """
         Read ``offset`` lines starting from ``base``.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param base: 0-based line number to start reading from.
         :param offset: number of lines to read.
         :return: the read lines.
@@ -230,7 +230,7 @@ class FsService:
         Insert content at the specified line, **without** overwriting
         existing lines.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param base: 0-based line number to insert at.
         :param content: lines to insert.
         """
@@ -253,7 +253,7 @@ class FsService:
         """
         Append content to the end of the file.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param content: lines to append.
         """
         full_path = self._file_assert(path)
@@ -266,7 +266,7 @@ class FsService:
         """
         Replace ``offset`` lines starting from ``base`` with ``content``.
 
-        :param path: path to the file.
+        :param path: workspace-relative path to the file.
         :param base: 0-based line number to start replacing from.
         :param offset: number of lines to replace.
         :param content: lines to replace them with.
