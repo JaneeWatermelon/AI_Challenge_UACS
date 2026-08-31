@@ -2,7 +2,7 @@
 @file agent/actions/workspace/create.py
 """
 
-from typing import Dict, Any, List, override
+from typing import Dict, Any, override
 from pathlib import Path
 
 from actions.base import Action, ActionVerdict
@@ -80,4 +80,3 @@ class ActionCreate(Action):
                 "removed": self.creation_cache
             }
         )
-
