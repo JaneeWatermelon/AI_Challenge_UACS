@@ -124,6 +124,16 @@ class FsService:
 
         return full_path
 
+    def exists(self, path: Path) -> bool:
+        """
+        file or directory existing check
+        :param path: workspace-relative path
+        :return: ``True`` if path exists ``False`` otherwise
+        """
+        full_path = self.resolve_path(path)
+
+        return full_path.exists(follow_symlinks=False)
+
     @staticmethod
     def validate_path(path: Path) -> tuple[bool, str, Optional[Path]]:
         """
