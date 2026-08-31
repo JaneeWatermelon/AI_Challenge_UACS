@@ -8,6 +8,7 @@ from utils.json import recursive_serializer
 from utils.logger import get_logger
 from actions.tools.adapter import ToolCallAdapter
 from llm_client import LLMClient
+from openai.types.chat.chat_completion_message import ChatCompletionMessage
 
 logger = get_logger(__name__)
 
@@ -31,17 +32,18 @@ class WarerAgent:
 
         return response
 
+    def _get_raw_input(self, message: ChatCompletionMessage) -> str:
+        if message.tool_calls:
+            raw_input = ToolCallAdapter.to_dispatcher_input(message)
+        else:
+            raw_input = message.content
+
+        return raw_input
+
     def run(self, prompt: str):
         message = self.llm.ask(prompt)
 
-        if message.tool_calls:
-            for tool_call in message.tool_calls:
-                name = tool_call.function.name
-                arguments = json.loads(tool_call.function.arguments)
-
-                raw_input = ToolCallAdapter.to_dispatcher_input(name, arguments)
-        else:
-            raw_input = message.content
+        raw_input = self._get_raw_input(message)
 
         verdicts = self.dispatcher.dispatch(raw_input)
         
@@ -53,17 +55,10 @@ class WarerAgent:
                 if not self.rate_limit is None:
                     time.sleep(self.rate_limit)
 
-                serialized_verdicts = list(map(lambda x: x.to_json(), verdicts))
+                serialized_verdicts = str(list(map(lambda x: x.to_json(), verdicts)))
                 message = self.llm.ask(serialized_verdicts)
                 
-                if message.tool_calls:
-                    for tool_call in message.tool_calls:
-                        name = tool_call.function.name
-                        arguments = json.loads(tool_call.function.arguments)
-        
-                        raw_input = ToolCallAdapter.to_dispatcher_input(name, arguments)
-                else:
-                    raw_input = message.content
+                raw_input = self._get_raw_input(message)
         
                 verdicts = self.dispatcher.dispatch(raw_input)
                 helper(verdicts, count + 1)

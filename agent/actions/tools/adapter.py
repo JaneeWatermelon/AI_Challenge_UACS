@@ -2,6 +2,7 @@
 
 import json
 from typing import Any
+from openai.types.chat.chat_completion_message import ChatCompletionMessage
 
 
 class ToolCallAdapter:
@@ -11,28 +12,38 @@ class ToolCallAdapter:
     """
 
     @staticmethod
-    def to_dispatcher_input(
-        name: str,
-        arguments: dict[str, Any],
-    ) -> str:
+    def to_dispatcher_input(message: ChatCompletionMessage) -> str:
         """
-        Convert a single tool call to dispatcher-compatible JSON.
+        Convert message.tool_calls to dispatcher-compatible JSON.
 
-        Example:
-            name = "exists"
-            arguments = {"path": "/app"}
+        Example result:
 
-        Returns:
-            '{"actions": [{"name": "exists", "arguments": {"path": "/app"}}]}'
-        """
-
-        payload = {
+        {
             "actions": [
                 {
-                    "name": name,
-                    "arguments": arguments,
+                    "action": "create",
+                    "arguments": {
+                        "path": "/app/bye.txt",
+                        "content": ["Bye"]
+                    }
                 }
             ]
+        }
+        """
+
+        actions = []
+
+        for tool_call in message.tool_calls:
+            name = tool_call.function.name
+            arguments = json.loads(tool_call.function.arguments)
+
+            actions.append({
+                "action": name,
+                "arguments": arguments,
+            })
+
+        payload = {
+            "actions": actions,
         }
 
         return json.dumps(

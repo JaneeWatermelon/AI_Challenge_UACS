@@ -32,6 +32,36 @@ class ActionCreate(Action):
         self.fs = fs_service
         self.last_created: Path | None = None
 
+    @classmethod
+    def parameters_schema(cls) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": (
+                        "Workspace-relative path to create. "
+                        "If the path ends with '/', create a directory; "
+                        "otherwise create a file."
+                    ),
+                },
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                    },
+                    "description": (
+                        "Lines to write to the created file. "
+                        "Defaults to an empty list."
+                    ),
+                    "default": [],
+                },
+            },
+            "required": ["path"],
+            "additionalProperties": False,
+        }
+
+
     @override
     def to_json(self) -> Dict[str, Any]:
         return {
