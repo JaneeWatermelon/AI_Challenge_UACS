@@ -36,7 +36,17 @@ class WarerAgent:
         if message.tool_calls:
             raw_input = ToolCallAdapter.to_dispatcher_input(message)
         else:
-            raw_input = message.content
+            # raw_input = message.content
+            raw_input = None
+
+        if raw_input is None:
+            raw_input = str({
+                "actions": [
+                    {
+                        "action": "ignore"
+                    }
+                ]
+            })
 
         return raw_input
 

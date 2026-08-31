@@ -24,6 +24,10 @@ class LLMClient:
             "Use the available tools to inspect and modify the workspace. "
             "Choose tools based on their descriptions and parameter schemas. "
             "Do not claim that an action was performed unless the corresponding tool succeeded. "
+            "If you got plain text, you have to do some tool calls that you think should be executed"
+            "If you got JSON of verdicts - this is how your choosed tools were executed."
+            "Depends on results in them you need to do some new executions or end work"
+            "For ending work you need to execute 'ignore' tool"
         )
 
     def ask(self, prompt: str) -> ChatCompletionMessage:

@@ -38,7 +38,8 @@ class ActionDispatcher:
                             otherwise a list of verdicts for each action.
         """
         self.context.clear()
-        logger.info(f"dispatch | cleared Context")
+        logger.debug(f"dispatch | cleared Context")
+        logger.info(f"dispatch | got raw_input: {raw_input}")
         parse_verdict, actions = self._parse(raw_input)
         logger.info(f"dispatch | parsed input | parse_verdict: {parse_verdict.to_json()} | actions: {[action.to_json() for action in actions]}")
 
