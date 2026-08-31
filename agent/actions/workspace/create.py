@@ -42,7 +42,7 @@ class ActionCreate(Action):
     def execute(self) -> ActionVerdict:
         self.last_created = Path()
 
-        path = self.arguments.get("path")
+        path: str = self.arguments.get("path")
         content = self.arguments.get("content", [])
 
         if path is None:
@@ -51,7 +51,7 @@ class ActionCreate(Action):
                 "missed required argument 'path'"
             )
 
-        path_obj = Path(path)
+        path_obj = Path(path.lstrip("/"))
         if str(path).endswith("/"):
             self.fs.create_directory(path_obj)
         else:
