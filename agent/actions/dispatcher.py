@@ -1,7 +1,7 @@
 """
 @file agent/actions/dispatcher.py
 """
-
+import json
 from typing import List, Optional
 
 from actions.base import Action
@@ -75,16 +75,23 @@ class ActionDispatcher:
                             - parsing verdict
                             - list of actions to execute
         """
-        json_response = BotResponseParser.to_json(raw_input)
-        parsed = BotResponseParser.parse_required_fields(json_response)
+        try:
+            json_response = BotResponseParser.to_json(raw_input)
+            parsed = BotResponseParser.parse_required_fields(json_response)
 
-        # 'actions' required field check
-        actions_field = parsed.get(BotRequiredFields.ACTIONS.value)
-        if actions_field is None:
+        except KeyError as e:
             return ActionVerdict(
                 ExitCode.PROTOCOL_ERROR,
-                f"required field '{BotRequiredFields.ACTIONS.value}' missed"
+                f"required field missed: {str(e)}"
             ), []
+
+        except json.JSONDecodeError as e:
+            return ActionVerdict(
+                ExitCode.PROTOCOL_ERROR,
+                f"given non-json input: {str(e)}"
+            ), []
+
+        actions_field = parsed.get(BotRequiredFields.ACTIONS.value)
 
         # Field instance check (see format.py)
         if not isinstance(actions_field, list):
