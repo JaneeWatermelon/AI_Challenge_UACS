@@ -76,7 +76,7 @@ class Action(ABC):
         pass
 
     @abstractmethod
-    def reverse(self):
+    def reverse(self) -> ActionVerdict:
         """
         Perform the reverse operation for rollback.
 

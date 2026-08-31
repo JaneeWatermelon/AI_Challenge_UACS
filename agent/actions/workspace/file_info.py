@@ -93,7 +93,7 @@ class ActionFileInfo(Action):
                 "missed 'path' argument"
             )
 
-        stat = self.fs.get_metadata(Path(path))
+        stat = self.fs.get_metadata(Path(path.lstrip("/")))
 
         return ActionVerdict(
             ExitCode.SUCCESS,
@@ -102,7 +102,7 @@ class ActionFileInfo(Action):
         )
 
     @override
-    def reverse(self) -> "ActionFileInfo":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -110,4 +110,4 @@ class ActionFileInfo(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

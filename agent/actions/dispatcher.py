@@ -10,6 +10,9 @@ from actions.verdict import ActionVerdict, ExitCode
 from protocol.format import BotRequiredFields, has_ignore_action
 from protocol.format import abort_reply
 from protocol.parser import BotResponseParser
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class ActionDispatcher:
@@ -35,23 +38,31 @@ class ActionDispatcher:
                             otherwise a list of verdicts for each action.
         """
         self.context.clear()
+        logger.info(f"dispatch | cleared Context")
         parse_verdict, actions = self._parse(raw_input)
+        logger.info(f"dispatch | parsed input | parse_verdict: {parse_verdict.to_json()} | actions: {[action.to_json() for action in actions]}")
 
         # Parsing step verification
         if parse_verdict.code != ExitCode.SUCCESS:
+            logger.info(f"dispatch | parse_verdict.code: {parse_verdict.code}")
             return [parse_verdict]  # Parsing issue
 
         # Explicit ignore command check
         if has_ignore_action(actions):
+            logger.info(f"dispatch | has_ignore_action True")
             return None  # Ignore flag
 
         # Execution
         for action in actions:
             verdict = action.execute()
+            logger.info(f"dispatch | action verdict: {verdict.to_json()}")
 
             # Rollback check
+            logger.info(f"dispatch | action verdict.code: {verdict.code}")
             if verdict.code != ExitCode.SUCCESS:
                 rollback_report = self._rollback(actions[:self.context.done + 1])
+                for i, report in enumerate(rollback_report):
+                    logger.info(f"dispatch | report_{i}: {report.to_json()}")
                 return abort_reply(
                     self.context.done,
                     verdict.details,

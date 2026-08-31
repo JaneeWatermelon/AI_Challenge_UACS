@@ -5,6 +5,7 @@ from actions.workspace.exists import ActionExists
 from actions.workspace.file_info import ActionFileInfo
 from actions.workspace.grep import ActionGrep
 from actions.workspace.ignore import ActionIgnore
+from actions.workspace.create import ActionCreate
 
 __all__ = [
     "ActionRead",
@@ -14,4 +15,5 @@ __all__ = [
     "ActionFileInfo",
     "ActionGrep",
     "ActionIgnore",
+    "ActionCreate",
 ]

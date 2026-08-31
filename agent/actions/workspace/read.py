@@ -108,7 +108,7 @@ class ActionRead(Action):
         )
 
     @override
-    def reverse(self) -> "ActionRead":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -116,4 +116,4 @@ class ActionRead(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

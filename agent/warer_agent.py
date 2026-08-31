@@ -1,12 +1,13 @@
 import json
+import time
 from typing import List
 from actions.dispatcher import ActionDispatcher
 from actions.verdict import ActionVerdict
-import time
 
-from llm_client import LLMClient
+from utils.json import recursive_serializer
 from utils.logger import get_logger
 from actions.tools.adapter import ToolCallAdapter
+from llm_client import LLMClient
 
 logger = get_logger(__name__)
 

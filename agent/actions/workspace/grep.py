@@ -200,7 +200,7 @@ class ActionGrep(Action):
         recursive = self.arguments.get("recursive", False)
         max_results = self.arguments.get("max_results", 100)
 
-        files = self._get_files(path, recursive)
+        files = self._get_files(path.lstrip("/"), recursive)
 
         result = []
 
@@ -223,7 +223,7 @@ class ActionGrep(Action):
         )
 
     @override
-    def reverse(self) -> "ActionGrep":
+    def reverse(self) -> ActionVerdict:
         """
         Return the reverse action.
 
@@ -231,4 +231,4 @@ class ActionGrep(Action):
 
         :return:    The same action instance.
         """
-        return self
+        return self.execute()

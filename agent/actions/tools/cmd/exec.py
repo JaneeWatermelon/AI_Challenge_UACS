@@ -274,8 +274,8 @@ class ActionExec(Action):
         )
 
     @override
-    def reverse(self) -> "ActionExec":
+    def reverse(self) -> ActionVerdict:
         """
         read only action (see `self.__init__`)
         """
-        return self
+        return self.execute()

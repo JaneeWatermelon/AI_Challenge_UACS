@@ -328,7 +328,10 @@ class ActionModify(Action):
                 "missed 'filename' or 'mode' argument"
             )
 
-        full_path = self.fs.resolve_path(Path(filename))
+        path = Path(filename.lstrip('/'))
+
+        # if path is not workspace-relative then it raise PermissionDenied
+        full_path = self.fs.resolve_path(path)
 
         mode = self.mode
         base = self.arguments.get("base")
@@ -348,6 +351,7 @@ class ActionModify(Action):
             return self._insert(full_path, base, content)
 
     @override
+    @safe_verdict
     def reverse(self) -> ActionVerdict:
         """
         Undo the last executed modification, based on the mode it ran in.

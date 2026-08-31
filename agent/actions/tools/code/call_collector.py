@@ -88,8 +88,6 @@ class ActionCallCollector(Action):
         for raw_path in files:
             path = Path(raw_path)
 
-            self.fs._path_assert(path)
-
             full_path = self.fs.resolve_path(path)
             text = full_path.read_text(encoding="utf-8", errors="replace")
 
@@ -102,8 +100,8 @@ class ActionCallCollector(Action):
         )
 
     @override
-    def reverse(self) -> "ActionCallCollector":
+    def reverse(self) -> ActionVerdict:
         """
         read only action
         """
-        return self
+        return self.execute()
