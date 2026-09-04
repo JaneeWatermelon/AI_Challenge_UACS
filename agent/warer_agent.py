@@ -19,7 +19,7 @@ class WarerAgent:
     #         cls.instance = super(WarerAgent, cls).__new__(cls)
     #     return cls.instance
 
-    def __init__(self, system_prompt: str = "", rate_limit: int = None):
+    def __init__(self, system_prompt: str = "", rate_limit: int = 0):
         self.llm = LLMClient(system_prompt)
         self.dispatcher = ActionDispatcher()
         self.rate_limit = min(max(0, rate_limit), 100)
